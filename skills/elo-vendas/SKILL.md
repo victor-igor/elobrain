@@ -1,15 +1,25 @@
 ---
 name: elo-vendas
-description: Director de vendas (Sales & Positioning). Recebe briefing do /elo Coordinator e delega para o /gos-mission-control existente em growth-os-skills (que já tem 8 employees especializados em nicho, LP, deck, GTM, playbook, meeting-prep, pitch-deck). Mantém compatibilidade total com a arquitetura growth-os-skills.
+description: Director de vendas (Sales & Positioning). SUB-AGENT obrigatório (pipelines longos 8+ skills). Antes de delegar pro /gos-mission-control, puxa contexto do cliente/nicho via mcp__elobrain__query (embeddings semânticos do brain). Sub-agent recebe prompt obrigatório sobre uso de MCP — nunca lê markdown raw.
 argument-hint: "[briefing-yaml OU 'LP pra cliente X' / 'deck pra apresentar Y' / 'GTM nicho Z']"
 allowed-tools: Agent, Read, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages
 tier: director
 reports_to: elo
+execution_mode: sub-agent-default
 
 # REGRA CRÍTICA (não negociável):
-# - Este Director é WRAPPER do /gos-mission-control + ROUTER pra brain.
-# - Antes de invocar /gos-mission-control, pegue contexto do cliente/nicho via /query ou mcp__elobrain__query (busca semântica).
-# - PROIBIDO: ctx_execute_file, regex em markdown. Use mcp__elobrain__* pra puxar dossie do cliente do brain.
+# Antes de invocar sub-agent /gos-mission-control:
+# 1. PUXE contexto do cliente/nicho no brain via mcp__elobrain__query DIRETO (nesta sessão)
+#    - mcp__elobrain__query("Clínica X discovery context")
+#    - mcp__elobrain__query("nicho dermato veterinária dossier")
+# 2. PASSE o contexto extraído como parte do briefing pro sub-agent
+# 3. Sub-agent recebe instrução EXPLÍCITA: "use mcp__elobrain__query se precisar de mais contexto,
+#    NUNCA Read raw em pages do brain"
+#
+# PROIBIDO (em qualquer ponto do pipeline):
+# - ctx_execute_file lendo arquivo markdown raw do brain
+# - Read em pages do brain pra buscar dossier (perde ranking semântico)
+# - Bash + grep em arquivos do vault cerebro
 delegates_to:
   - gos-mission-control (em /Users/victorigor/Eloscope-IA/growth-os-skills/)
 members_inherited_from_gos:
@@ -92,7 +102,24 @@ if [ ! -d "$GOS_WORKSPACE" ]; then
 fi
 ```
 
-### Passo 3 — Invocar /gos-mission-control via Agent tool
+### Passo 3 — Puxar contexto do brain (INLINE, antes do sub-agent)
+
+```python
+# Busca semântica no brain Eloscope ANTES de invocar gos-mission-control
+ctx_cliente = mcp__elobrain__query(
+  query=f"dossier {client_slug} discovery decisões",
+  limit=8
+)
+ctx_nicho = mcp__elobrain__query(
+  query=f"análise mercado {niche_slug}",
+  limit=5
+) if niche_slug else None
+
+# Compor brain_context pra passar pro sub-agent
+brain_context_yaml = format_citations(ctx_cliente, ctx_nicho)
+```
+
+### Passo 4 — Invocar /gos-mission-control via Agent tool
 
 ```python
 Agent({
@@ -104,15 +131,25 @@ Agent({
   Workspace ativo: /Users/victorigor/Eloscope-IA/growth-os-skills/
   
   Briefing (handoff_in):
-  
   {briefing_yaml}
+  
+  CONTEXTO DO BRAIN (já buscado via mcp__elobrain__query):
+  {brain_context_yaml}
+  
+  REGRA OBRIGATÓRIA (não negociável):
+  - Se precisar de mais contexto, USE mcp__elobrain__query OU mcp__elobrain__search.
+    Você TEM essas tools disponíveis.
+  - PROIBIDO: ctx_execute_file, Read raw em pages do brain (perde ranking).
+  - PROIBIDO: regex/grep em markdowns do vault cerebro.
+  - Sempre que citar fato do brain: incluir [Source: slug] na resposta.
   
   Executar pipeline conforme SKILL.md em:
   /Users/victorigor/Eloscope-IA/growth-os-skills/.claude/skills/gos-mission-control/SKILL.md
   
-  Retornar handoff_out conforme o contract de saída do gos-mission-control:
+  Retornar:
   - pipeline_summary
   - artifacts (paths)
+  - citations (slugs do brain usados, com scores)
   - checkpoints_passed
   """
 })

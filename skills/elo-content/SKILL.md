@@ -1,16 +1,24 @@
 ---
 name: elo-content
-description: Director de produção de conteúdo. Recebe briefing do /elo Coordinator e orquestra as skills de output visual/publicado (carrossel-eloscope, brain-pdf, publish, article-enrichment). Usa contexto do brain como matéria-prima para gerar conteúdo finalizado.
-argument-hint: "[briefing-yaml OU 'carrossel sobre X' / 'PDF da página Y' / 'publica essa página']"
+description: Director de produção de conteúdo. INLINE pra carrossel/PDF/publish/artigo (rápido, MCP direto). SUB-AGENT pra book-mirror (longo, isolado). Sempre puxa contexto do brain via mcp__elobrain__query (embeddings semânticos), nunca lê markdown raw.
+argument-hint: "[briefing-yaml OU 'carrossel sobre X' / 'PDF da página Y' / 'livro Z']"
 allowed-tools: Agent, Read, Write, Edit, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page
 tier: director
 reports_to: elo
+execution_mode: inline-default
 
 # REGRA CRÍTICA (não negociável):
-# - Este Director é ROUTER, não EXECUTOR.
-# - Pra puxar contexto do brain (matéria-prima do conteúdo): SEMPRE via /query ou mcp__elobrain__query.
-# - Skills produtoras (carrossel-eloscope, brain-pdf, publish): invoque via Agent tool.
-# - PROIBIDO: ctx_execute_file, regex em markdown raw. Use mcp__elobrain__* pra ler pages estruturadas com citações.
+# Pra contexto do brain (matéria-prima do conteúdo): USE mcp__elobrain__query
+# OU mcp__elobrain__search DIRETAMENTE. Retorna top-k chunks com scores semânticos.
+#
+# PROIBIDO:
+# - Read em pages do brain (perde ranking)
+# - ctx_execute_file lendo arquivo markdown raw
+# - Bash + grep em arquivos do vault
+# - regex parsing em markdown
+#
+# Modo padrão: INLINE (carrossel, PDF, publish, artigo são rápidos).
+# Modo SUB-AGENT: apenas book-mirror (análise longa de livro inteiro).
 members:
   # Produção visual
   - carrossel-eloscope
@@ -122,9 +130,29 @@ Diferença pra `/elo-brain`: brain captura/sintetiza. Content **finaliza para ap
 | "artigo", "estrutura texto" | `artigo` |
 | "livro", "book", "análise capítulo" | `livro` |
 
-### Passo 2 — Executar (via Agent tool)
+### Passo 2 — Executar (INLINE por padrão, SUB-AGENT pra book-mirror)
 
-Padrão idêntico aos outros Directors — invocar skill atômica em contexto isolado.
+**INLINE** (carrossel, pdf, publish, artigo):
+- Claude executa direto na sessão
+- Puxa contexto do brain via `mcp__elobrain__query(...)` (top 5 chunks com scores)
+- Invoca skill produtora atômica (`/carrossel-eloscope`, `/brain-pdf`, `/publish`, `/article-enrichment`) — Claude lê o SKILL.md e segue
+
+**SUB-AGENT** (apenas `livro`/book-mirror):
+```python
+Agent({
+  description: "Run /book-mirror with brain context",
+  subagent_type: "general-purpose",
+  prompt: f"""
+  Você é /book-mirror. Analise <book-epub/pdf>.
+  
+  REGRA OBRIGATÓRIA:
+  - Use mcp__elobrain__query pra buscar contexto da vida do usuário no brain
+  - PROIBIDO: ctx_execute_file, Read raw em pages
+  
+  Output: brain page em media/books/<slug>-personalized.md
+  """
+})
+```
 
 ### Passo 3 — Retornar artefatos
 

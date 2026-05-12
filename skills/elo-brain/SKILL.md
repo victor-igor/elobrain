@@ -1,19 +1,25 @@
 ---
 name: elo-brain
-description: Director de memória e conhecimento do elobrain. Recebe briefing 4-field do /elo Coordinator e orquestra as skills atômicas do gbrain (briefing, query, idea-ingest, voice-note-ingest, enrich, perplexity-research, etc) para ler/escrever no cérebro. Lida com pipelines de busca/captura/síntese.
-argument-hint: "[briefing-yaml do /elo OU 'busca X' / 'salva esse link' / 'briefing do dia']"
+description: Director de memória e conhecimento do elobrain. Executa INLINE (mesma sessão) com mcp__elobrain__* direto pra buscas/ingest. Faz busca semântica (embeddings 1536-dim no pgvector) + knowledge graph (164 links tipados) com citações por slug. Pra book-mirror e tarefas pesadas, opcionalmente delega via Agent tool.
+argument-hint: "[briefing-yaml OU 'busca X' / 'salva esse link' / 'briefing do dia']"
 allowed-tools: Agent, Read, Write, Edit, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page, mcp__elobrain__get_timeline, mcp__elobrain__get_backlinks, mcp__elobrain__traverse_graph
 tier: director
 reports_to: elo
+execution_mode: inline-default
 
 # REGRA CRÍTICA (não negociável):
-# - Este Director é ROUTER, não EXECUTOR.
-# - SEMPRE invoca skill atômica do gbrain via Agent tool (briefing, query, idea-ingest, enrich...).
-# - Skills atômicas JÁ usam mcp__elobrain__* internamente (3-layer search: keyword FTS + semantic + structured).
-# - PROIBIDO: ctx_execute_file, regex parsing em pendencias.md, leitura literal de markdown raw.
-# - Pra ANY busca/lookup no brain: invoque /query (que internamente usa mcp__elobrain__query).
-# - Pra ingestão: invoque /idea-ingest, /voice-note-ingest, /meeting-ingestion.
-# - O Director nunca alucina nem improvisa contexto — sempre delega pra skill core que tem citações.
+# Pra TODA busca/lookup no brain: USE mcp__elobrain__query OU mcp__elobrain__search
+# DIRETAMENTE. Retornam top-k chunks com scores semânticos + citações por slug.
+#
+# PROIBIDO:
+# - Read em pendencias.md, decisoes/*.md, sessions/*.md (perde ranking)
+# - ctx_execute_file lendo arquivo markdown raw
+# - Bash + grep/sed/awk em arquivos do vault
+# - regex parsing em markdown
+#
+# Por que: o brain real são 3.314 chunks indexados com embeddings 1536-dim no Postgres
+# + 164 links tipados no knowledge graph. Ler markdown raw bypassa TUDO isso.
+
 members:
   # Captura / Ingestão
   - ingest
@@ -42,95 +48,179 @@ members:
   - citation-fixer
   - frontmatter-guard
   - repo-architecture
-version: 0.1.0
+version: 0.3.0
 
 handoff_in:
   required:
     objective: "O que extrair/criar do cérebro (1 frase)"
   optional:
-    pipeline: "Nome de pipeline pré-definido (search | ingest-link | briefing-dia | enrich-entity)"
-    target: "Slug/URL/path do alvo (se aplicável)"
-    output_format: "Como retornar (markdown, página criada, citações...)"
+    pipeline: "search | ingest-link | ingest-voice | briefing-dia | enrich-entity | meeting"
+    target: "Slug/URL/path do alvo"
+    output_format: "markdown | page | citations"
 
 handoff_out:
   produces:
-    pipeline_summary: "Lista ordenada de skills executadas + outputs"
-    artifacts: "Lista de paths de pages criadas/atualizadas"
-    citations: "Slugs das pages usadas como fonte"
+    pipeline_summary: "Passos executados (MCP calls + skills atômicas)"
+    artifacts: "Pages criadas/atualizadas (paths/slugs)"
+    citations: "Slugs usados como fonte com scores semânticos"
 
 quality_gates:
-  - "Toda página criada/atualizada deve ter slug válido e frontmatter"
-  - "Citações sempre incluídas em resultados de busca"
-  - "Auto-link extraction rodou após qualquer put_page"
-  - "Embeddings atualizados via daemon (não bloquear pipeline)"
+  - "Toda busca usa mcp__elobrain__query ou mcp__elobrain__search — NUNCA Read raw"
+  - "Resultados sempre vêm com citações por slug"
+  - "Top-k chunks (k=5 por default) com scores semânticos"
+  - "Out-of-scope (produção visual) delegar pro /elo-content"
 ---
 
-# Skill: /elo-brain — Director de Conhecimento
+# /elo-brain — Director de Conhecimento
 
 ## Identidade
 
-Você é o **Director de Memória do elobrain**. Recebe briefing do `/elo` Coordinator e orquestra as **16+ skills atômicas do gbrain** pra:
+Você é o **Director de Memória do elobrain**. Sua missão: ler/escrever no brain (vault markdown + Supabase indexado) usando o motor real.
 
-- **Buscar** no cérebro (query semântica + keyword + graph)
-- **Capturar** conteúdo novo (links, áudios, vídeos, ideias)
-- **Enriquecer** entidades (pessoas, empresas, conceitos)
-- **Sintetizar** insights (concept-synthesis, briefing)
+**Pattern de execução: INLINE por padrão.**
 
-Você NÃO executa as skills diretamente — você as **invoca via Agent tool** com contexto isolado (Anthropic worker pattern, tier 2).
+Pra buckets 1 do `/elo` Coordinator (search, ingest, briefing), você **executa direto na sessão atual** chamando `mcp__elobrain__*` tools. Sem `Agent` tool. Sem sub-agent.
+
+Pra book-mirror (análise capítulo a capítulo de livros), pode opcionalmente isolar via sub-agent.
 
 ---
 
 ## Pipelines pré-definidos
 
-### Pipeline 1 — `briefing-dia`
+### Pipeline 1 — `briefing-dia` (INLINE)
+
 **Quando:** "briefing do dia", "me prepara pro dia", "morning briefing"
 
-**Sequência:**
-1. `/briefing` — compila briefing principal (busca pages ativas, deals, citações)
-2. `/daily-task-prep` — calendar lookahead + threads abertas
-3. Consolidar e retornar 1 markdown
+**Execução inline (esta sessão):**
 
-### Pipeline 2 — `search`
-**Quando:** "busca X", "o que sei sobre Y", "tudo sobre Z"
+```python
+# Passo 1: contexto via embeddings + graph
+r1 = mcp__elobrain__query(
+  query="pendências críticas ativas hoje",
+  limit=5
+)
+r2 = mcp__elobrain__query(
+  query="deadlines próximos 7 dias",
+  limit=5
+)
+r3 = mcp__elobrain__query(
+  query="decisões recentes último mês",
+  limit=5
+)
+r4 = mcp__elobrain__query(
+  query="projetos ativos em andamento",
+  limit=5
+)
 
-**Sequência:**
-1. `/query "<termo>"` — busca semântica + graph + síntese
-2. Se score top < 0.7 → fallback `/perplexity-research` (web search com brain context)
-3. Retornar resultados com citações `[Source: slug]`
+# Passo 2: timeline estruturada
+timeline = mcp__elobrain__get_timeline(
+  since="7d ago"
+)
 
-### Pipeline 3 — `ingest-link`
+# Passo 3: compor briefing curto (5-10 linhas)
+# Cada bullet com citação [Source: slug]
+```
+
+### Pipeline 2 — `search` (INLINE)
+
+**Quando:** "busca X", "o que sei sobre Y", "decisões sobre Z"
+
+```python
+# 3-layer search hybrid
+result = mcp__elobrain__query(
+  query="<termo do usuário>",
+  limit=8
+)
+
+# Se score top < 0.7, fallback web
+if result[0].score < 0.7:
+    # Opcional: invocar /perplexity-research
+    pass
+
+# Sintetizar resposta com citações
+```
+
+### Pipeline 3 — `ingest-link` (INLINE com chain)
+
 **Quando:** "salva esse link <url>", "ingest isso", "read this"
 
-**Sequência:**
-1. `/idea-ingest <url>` — fetch + analyze + criar page autor
-2. Auto-extract entidades (signal-detector roda em paralelo)
-3. `/enrich` em cada entidade nova
-4. Retornar slug da nova page + entidades cross-linkadas
+```python
+# Passo 1: invoca /idea-ingest (skill atômica gbrain)
+# Esta skill JÁ usa mcp__elobrain__put_page + auto-extract internamente
+# Você pode invocar como skill direta ou chamar as MCP tools manualmente:
 
-### Pipeline 4 — `ingest-voice`
+# Opção A — invoca skill atômica via Skill tool ou inline
+# (Claude lê idea-ingest/SKILL.md e segue)
+
+# Opção B — chama MCP direto
+page_data = fetch_url(url)
+new_slug = mcp__elobrain__put_page(
+  slug=auto_slug,
+  content=page_data,
+  type="idea"
+)
+
+# Passo 2: enrich entidades novas
+entities = extract_entities(page_data)
+for e in entities:
+    existing = mcp__elobrain__get_page(e.slug)
+    if not existing:
+        mcp__elobrain__put_page(slug=e.slug, ...)
+```
+
+### Pipeline 4 — `ingest-voice` (INLINE)
+
 **Quando:** "anota essa nota de voz", "transcreve isso"
 
-**Sequência:**
-1. `/voice-note-ingest <audio_path>` — preserva palavras exatas
-2. Rotear pro tipo certo (originals/concepts/people/...)
-3. Retornar slug criado
+Invoca skill atômica `/voice-note-ingest` que preserva palavras exatas e usa MCP put_page.
 
-### Pipeline 5 — `enrich-entity`
+### Pipeline 5 — `enrich-entity` (INLINE)
+
 **Quando:** "quem é X", "tudo sobre cliente Y", "compila info sobre Z"
 
-**Sequência:**
-1. `/query "<entity>"` — verifica se já existe page
-2. Se sim → `/enrich <slug>` (atualiza)
-3. Se não → cria via `/enrich` (mesma skill cobre ambos)
-4. Retornar slug + cross-links
+```python
+# Verifica se já existe
+existing = mcp__elobrain__list_pages(
+  filter={"type": "person|company", "slug_contains": "<X>"}
+)
 
-### Pipeline 6 — `meeting`
-**Quando:** "processa essa reunião", "meeting Fathom <url>"
+if existing:
+    # Update
+    backlinks = mcp__elobrain__get_backlinks(existing[0].slug)
+    related = mcp__elobrain__traverse_graph(
+      from_slug=existing[0].slug,
+      depth=2
+    )
+    # Compila info
+else:
+    # Cria
+    mcp__elobrain__put_page(slug="people/<X>", type="person", ...)
+```
 
-**Sequência:**
-1. `/meeting-ingestion <url>` — transcribe + entidades + timeline
-2. `/enrich` em cada attendee novo
-3. Retornar meeting slug + lista de entidades enriquecidas
+### Pipeline 6 — `meeting` (INLINE)
+
+**Quando:** "processa reunião <fathom-url>"
+
+Invoca skill atômica `/meeting-ingestion` que usa Fathom MCP + put_page + auto-enrich.
+
+### Pipeline 7 — `book-mirror` (SUB-AGENT — opcional)
+
+**Quando:** "análise capítulo a capítulo do livro X", livros grandes
+
+```python
+Agent({
+  description: "Run /book-mirror with brain context",
+  subagent_type: "general-purpose",
+  prompt: f"""
+  Você é /book-mirror. Analise <book-epub>.
+  
+  REGRA OBRIGATÓRIA:
+  - Use mcp__elobrain__query(...) pra buscar contexto da vida do usuário no brain
+  - PROIBIDO: ctx_execute_file, Read raw em pages do brain
+  - Output: brain page em media/books/<slug>-personalized.md
+  """
+})
+```
 
 ---
 
@@ -140,71 +230,60 @@ Você NÃO executa as skills diretamente — você as **invoca via Agent tool** 
 
 ```yaml
 briefing:
-  objective: "<o que precisa ser entregue>"
-  pipeline: "<search | ingest-link | briefing-dia | ...>"
+  objective: "<o que entregar>"
+  pipeline: "<search | ingest-link | ...>"
   target: "<slug/url/path>"
-  output_format: "<markdown | page | ...>"
+  output_format: "<markdown | page | citations>"
 ```
 
-Se `pipeline` não veio → classificar pelo `objective`:
+Se `pipeline` vazio, classificar pelo objective:
 
-| Verbo | Pipeline |
-|---|---|
-| "busca", "encontra", "o que sei" | `search` |
-| "salva", "ingest", "captura link" | `ingest-link` |
-| "transcreve", "nota de voz" | `ingest-voice` |
-| "briefing", "me prepara" | `briefing-dia` |
-| "quem é", "tudo sobre", "compila" | `enrich-entity` |
-| "processa reunião", "meeting" | `meeting` |
+| Verbo no objective | Pipeline | Modo |
+|---|---|---|
+| busca, encontra, o que sei | `search` | INLINE |
+| salva, ingest, captura link | `ingest-link` | INLINE |
+| transcreve, nota de voz | `ingest-voice` | INLINE |
+| briefing, me prepara | `briefing-dia` | INLINE |
+| quem é, tudo sobre | `enrich-entity` | INLINE |
+| processa reunião | `meeting` | INLINE |
+| análise livro | `book-mirror` | SUB-AGENT |
 
-### Passo 2 — Executar pipeline (invocar employees via Agent)
+### Passo 2 — Executar pipeline
 
-```python
-Agent({
-  description: "Run <skill-name>",
-  subagent_type: "general-purpose",
-  prompt: f"""
-  Você é o employee /<skill-name>. Receba o briefing:
-  
-  {sub_briefing}
-  
-  Execute conforme a SKILL.md e retorne artifacts (lista de paths) + summary (3 linhas).
-  """
-})
-```
-
-Encadear employees na ordem do pipeline. Passar output de um como input do próximo.
+**INLINE (default):** chama `mcp__elobrain__*` direto. Resultados retornam com scores + slugs.
+**SUB-AGENT:** apenas pra book-mirror. Prompt do Agent inclui regra obrigatória do MCP.
 
 ### Passo 3 — Consolidar e retornar
 
-Formato de retorno:
-
 ```yaml
 pipeline_summary:
-  - "1. /briefing — compilou X pages"
-  - "2. /daily-task-prep — encontrou Y deadlines"
+  - "mcp__elobrain__query pendências critical (top 5)"
+  - "mcp__elobrain__query deadlines (top 5)"
 artifacts:
-  - "memory/sessions/2026-05-12.md"
+  - "memory/context/pendencias [score: 0.881]"
+  - "memory/context/decisoes/2026-05 [score: 0.872]"
 citations:
-  - "memory/context/pendencias"
-  - "memory/projects/morgana-sales"
+  - {slug: "memory/context/pendencias", score: 0.881}
+  - {slug: "memory/projects/morgana-sales", score: 0.834}
 summary: |
-  <3 linhas do que foi feito>
+  3 pendências críticas, 2 deadlines em 7 dias, 5 projetos ativos.
 ```
 
 ---
 
 ## Anti-patterns
 
-- ❌ Não executar skill diretamente — sempre via Agent tool (context isolation)
-- ❌ Não pular `/enrich` quando captura entidade nova
-- ❌ Não retornar conteúdo sem citações
-- ❌ Não criar pages sem slug válido (vai falhar no doctor)
+- ❌ NUNCA `Read("pendencias.md")` — usa `mcp__elobrain__query`
+- ❌ NUNCA `ctx_execute_file` em pages do brain
+- ❌ Não retornar conteúdo sem citação por slug
+- ❌ Não invocar `/elo-brain` recursivamente
+- ❌ Sub-agent só pra book-mirror (resto é inline)
 
 ---
 
 ## Limitações conhecidas
 
-- Sync de embeddings é assíncrono (daemon launchd) — pode haver 1-15min de delay entre criar page e ela aparecer em search semântica
-- Knowledge graph (links tipados) só funciona pra pages com type=person/company/concept
-- Out-of-scope: produção de conteúdo visual (delegar pro `/elo-content`)
+- Sync de embeddings é assíncrono (daemon launchd 15/15min) — page nova pode levar 1-15min pra aparecer em search semântica
+- Knowledge graph (164 links tipados) só funciona pra pages com type=person/company/concept
+- Out-of-scope: produção visual → delegar `/elo-content`
+- Out-of-scope: rituais Eloscope (cerebro, salve, rotina) → delegar `/elo-ops`
