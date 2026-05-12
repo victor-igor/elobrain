@@ -34,6 +34,67 @@ A stack tem **6 camadas** (5 visíveis ao usuário + 1 de infra):
 
 ---
 
+## Árvore de orquestração `/elo`
+
+Quem comanda o quê. O Coordinator no topo, 4 Directors temáticos abaixo, skills/sub-agentes na base:
+
+```mermaid
+graph TD
+    User([Operador<br/>fala em PT-BR])
+    User --> Elo["/elo<br/>Coordinator<br/>classifica intent"]
+
+    Elo --> EB["/elo-brain<br/>memória/conhecimento"]
+    Elo --> EO["/elo-ops<br/>operação interna"]
+    Elo --> EC["/elo-content<br/>produção"]
+    Elo --> EV["/elo-vendas<br/>sales/GTM"]
+    Elo -.bucket 5/6.-> Direct["skill atômica direta<br/>(passa sem Director)"]
+
+    EB --> EB1[/query/]
+    EB --> EB2[/ingest/]
+    EB --> EB3[/recall/]
+    EB --> EB4[/idea-ingest/]
+
+    EO --> EO1[/cerebro/]
+    EO --> EO2[/salve/]
+    EO --> EO3[/rotina/]
+    EO --> EO4[/sync/]
+    EO --> EO5[/meeting/<br/>sub-agent Fathom]
+
+    EC --> EC1[/carrossel-eloscope/]
+    EC --> EC2[/publish/]
+    EC --> EC3[/book-mirror/<br/>sub-agent]
+    EC --> EC4[/brain-pdf/]
+
+    EV --> GOS["/gos-mission-control<br/>Diretor GOS<br/>(sub-agent)"]
+    GOS --> G1[gos-nicho-explorer]
+    GOS --> G2[gos-cliente-radar]
+    GOS --> G3[gos-lp-builder]
+    GOS --> G4[gos-pitch-deck-builder]
+    GOS --> G5[gos-gtm-architect]
+    GOS --> G6[gos-playbook-vendas]
+    GOS -.audita.-> GC[critic-nicho<br/>critic-lp<br/>critic-deck<br/>critic-playbook]
+
+    classDef coord fill:#1e3a8a,color:#fff,stroke:#fff
+    classDef director fill:#7c3aed,color:#fff,stroke:#fff
+    classDef gosdir fill:#0891b2,color:#fff,stroke:#fff
+    classDef skill fill:#1f2937,color:#e5e7eb,stroke:#4b5563
+    classDef critic fill:#7c2d12,color:#fff,stroke:#fff
+    class Elo coord
+    class EB,EO,EC,EV director
+    class GOS gosdir
+    class EB1,EB2,EB3,EB4,EO1,EO2,EO3,EO4,EO5,EC1,EC2,EC3,EC4,G1,G2,G3,G4,G5,G6,Direct skill
+    class GC critic
+```
+
+**Como ler:**
+- **Setas cheias** — invocação direta (Coordinator → Director → skill).
+- **Setas pontilhadas** — atalho ou validação (skill atômica sem Director / auditores pós-execução).
+- **Cores:** azul-escuro = Coordinator · roxo = Directors elobrain · ciano = Diretor GOS (importado) · cinza = skills/funcionários · marrom = auditores.
+
+**Princípio:** cada Director **só conhece suas próprias skills**. O Coordinator é o único com visão global. Skills nunca chamam outras skills — só o Director coordena. Isso isola contexto e evita cascata de erros.
+
+---
+
 ## Componentes principais
 
 ### Camada 0–1 — Infra + MCP
