@@ -183,7 +183,50 @@ Agent({
 
 ---
 
-## Pipeline interno (4 passos)
+## Pipeline interno (5 passos)
+
+### Passo 0 — Identificar quem tá conversando
+
+**OBRIGATÓRIO antes de qualquer ação:**
+
+```bash
+# Lê env var (cada membro do time tem isso no ~/.zshrc)
+user_slug = $(echo $ELOBRAIN_USER)   # ex: "victor", "lucas", "hugo"
+# Default: "default" se não setado
+```
+
+**Carregar persona via MCP (semantic search):**
+
+```python
+# Passo 0.1 — perfil do user (quem é, role, foco)
+user_profile = mcp__elobrain__get_page(f"memory/users/{user_slug}/USER")
+
+# Passo 0.2 — identidade do agente (como deve falar)
+agent_soul = mcp__elobrain__get_page(f"memory/users/{user_slug}/SOUL")
+
+# Passo 0.3 — cadência operacional (preferências de timing)
+heartbeat = mcp__elobrain__get_page(f"memory/users/{user_slug}/HEARTBEAT")
+
+# Passo 0.4 — políticas de acesso (o que pode/não pode ver)
+access_policy = mcp__elobrain__get_page(f"memory/users/{user_slug}/ACCESS_POLICY")
+```
+
+**Se page não existe:**
+- `default` → opera em modo genérico, sem personalização
+- user setado mas sem page → sugerir: *"Não achei seu perfil. Roda `/soul-audit` pra criar (6 perguntas, 10 min)."*
+
+**Esses 4 arquivos por user são gerados pela skill `/soul-audit`** (skill core gbrain). Cada membro roda 1 vez:
+```
+Victor: /soul-audit → memory/users/victor/{SOUL,USER,HEARTBEAT,ACCESS_POLICY}.md
+Lucas:  /soul-audit → memory/users/lucas/...
+Hugo:   /soul-audit → memory/users/hugo/...
+```
+
+**Usar persona pra personalizar todos os próximos passos:**
+- Briefing em PT-BR, tom direto (se SOUL diz "informal, sem floreio")
+- Foco em produto+RAG (se USER diz "Victor: CTO, foco produto")
+- Filtra pendências (se ACCESS_POLICY diz "Victor não acessa cobranças")
+- Ajusta hora (se HEARTBEAT diz "Victor odeia briefing antes 8h")
 
 ### Passo 1 — Coletar objetivo
 
