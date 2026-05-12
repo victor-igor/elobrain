@@ -58,7 +58,7 @@ A camada de **orquestração `/elo`** segue o pattern Anthropic orchestrator-wor
 └────────────────────────────────────────────────────────┘
 ```
 
-Documentação completa: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) (em construção)
+Documentação completa: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — overview da stack + fluxos + multi-operador + cross-refs aos sub-docs especializados.
 
 ---
 
