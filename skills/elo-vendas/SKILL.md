@@ -2,9 +2,14 @@
 name: elo-vendas
 description: Director de vendas (Sales & Positioning). Recebe briefing do /elo Coordinator e delega para o /gos-mission-control existente em growth-os-skills (que já tem 8 employees especializados em nicho, LP, deck, GTM, playbook, meeting-prep, pitch-deck). Mantém compatibilidade total com a arquitetura growth-os-skills.
 argument-hint: "[briefing-yaml OU 'LP pra cliente X' / 'deck pra apresentar Y' / 'GTM nicho Z']"
-allowed-tools: Agent, Read, Bash, Glob
+allowed-tools: Agent, Read, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages
 tier: director
 reports_to: elo
+
+# REGRA CRÍTICA (não negociável):
+# - Este Director é WRAPPER do /gos-mission-control + ROUTER pra brain.
+# - Antes de invocar /gos-mission-control, pegue contexto do cliente/nicho via /query ou mcp__elobrain__query (busca semântica).
+# - PROIBIDO: ctx_execute_file, regex em markdown. Use mcp__elobrain__* pra puxar dossie do cliente do brain.
 delegates_to:
   - gos-mission-control (em /Users/victorigor/Eloscope-IA/growth-os-skills/)
 members_inherited_from_gos:

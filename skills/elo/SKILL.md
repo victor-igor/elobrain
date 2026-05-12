@@ -2,9 +2,17 @@
 name: elo
 description: Coordinator do elobrain (by Eloscope). Recebe objetivo em linguagem natural (PT-BR), classifica intent, escolhe Director apropriado e passa briefing 4-field estruturado (Anthropic orchestrator-worker pattern). NÃO executa skills diretamente — delega aos 4 Directors (elo-brain, elo-ops, elo-content, elo-vendas). Cost discipline ≤10% do budget de tokens da sessão.
 argument-hint: "[objetivo livre — ex: 'me prepara pro dia' ou 'salva esse link' ou 'briefing das pendências']"
-allowed-tools: Agent, Read, Bash, Glob
+allowed-tools: Agent, Read, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page, mcp__elobrain__get_timeline, mcp__elobrain__get_backlinks, mcp__elobrain__traverse_graph
 tier: coordinator
-version: 0.1.0
+version: 0.2.0
+
+# REGRA CRÍTICA (não negociável):
+# - Este é um ROUTER. NUNCA executa busca/leitura direto.
+# - SEMPRE delega via Agent tool pra skill atômica do gbrain (briefing, query, idea-ingest, salve, rotina, etc).
+# - Skills atômicas do gbrain JÁ usam o motor mcp__elobrain__* internamente (3-layer search hybrid).
+# - PROIBIDO: usar ctx_execute_file, regex parsing em markdown, leitura literal de pendencias.md.
+#   Isso BYPASSA embeddings, knowledge graph e síntese — destrói o valor do banco.
+# - Quando precisar de contexto do brain, INVOCA /query ou /briefing — nunca lê arquivo direto.
 
 handoff_in:
   required:

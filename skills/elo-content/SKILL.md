@@ -2,9 +2,15 @@
 name: elo-content
 description: Director de produção de conteúdo. Recebe briefing do /elo Coordinator e orquestra as skills de output visual/publicado (carrossel-eloscope, brain-pdf, publish, article-enrichment). Usa contexto do brain como matéria-prima para gerar conteúdo finalizado.
 argument-hint: "[briefing-yaml OU 'carrossel sobre X' / 'PDF da página Y' / 'publica essa página']"
-allowed-tools: Agent, Read, Write, Edit, Bash, Glob
+allowed-tools: Agent, Read, Write, Edit, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page
 tier: director
 reports_to: elo
+
+# REGRA CRÍTICA (não negociável):
+# - Este Director é ROUTER, não EXECUTOR.
+# - Pra puxar contexto do brain (matéria-prima do conteúdo): SEMPRE via /query ou mcp__elobrain__query.
+# - Skills produtoras (carrossel-eloscope, brain-pdf, publish): invoque via Agent tool.
+# - PROIBIDO: ctx_execute_file, regex em markdown raw. Use mcp__elobrain__* pra ler pages estruturadas com citações.
 members:
   # Produção visual
   - carrossel-eloscope

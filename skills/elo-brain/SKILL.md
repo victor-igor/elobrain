@@ -2,9 +2,18 @@
 name: elo-brain
 description: Director de memória e conhecimento do elobrain. Recebe briefing 4-field do /elo Coordinator e orquestra as skills atômicas do gbrain (briefing, query, idea-ingest, voice-note-ingest, enrich, perplexity-research, etc) para ler/escrever no cérebro. Lida com pipelines de busca/captura/síntese.
 argument-hint: "[briefing-yaml do /elo OU 'busca X' / 'salva esse link' / 'briefing do dia']"
-allowed-tools: Agent, Read, Write, Edit, Bash, Glob
+allowed-tools: Agent, Read, Write, Edit, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page, mcp__elobrain__get_timeline, mcp__elobrain__get_backlinks, mcp__elobrain__traverse_graph
 tier: director
 reports_to: elo
+
+# REGRA CRÍTICA (não negociável):
+# - Este Director é ROUTER, não EXECUTOR.
+# - SEMPRE invoca skill atômica do gbrain via Agent tool (briefing, query, idea-ingest, enrich...).
+# - Skills atômicas JÁ usam mcp__elobrain__* internamente (3-layer search: keyword FTS + semantic + structured).
+# - PROIBIDO: ctx_execute_file, regex parsing em pendencias.md, leitura literal de markdown raw.
+# - Pra ANY busca/lookup no brain: invoque /query (que internamente usa mcp__elobrain__query).
+# - Pra ingestão: invoque /idea-ingest, /voice-note-ingest, /meeting-ingestion.
+# - O Director nunca alucina nem improvisa contexto — sempre delega pra skill core que tem citações.
 members:
   # Captura / Ingestão
   - ingest

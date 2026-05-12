@@ -2,9 +2,18 @@
 name: elo-ops
 description: Director de operação Eloscope. Recebe briefing do /elo Coordinator e orquestra os rituais operacionais usando as skills custom da Eloscope (cerebro, salve, rotina, reuniao, sync) que vivem no vault cerebro/. Cuida do "dia a dia" — abrir sessão, processar reuniões, fechar sessão, cockpit matinal.
 argument-hint: "[briefing-yaml OU 'me prepara pro dia' / 'salva sessao' / 'cockpit']"
-allowed-tools: Agent, Read, Write, Edit, Bash, Glob
+allowed-tools: Agent, Read, Write, Edit, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page, mcp__elobrain__get_timeline
 tier: director
 reports_to: elo
+
+# REGRA CRÍTICA (não negociável):
+# - Este Director é ROUTER, não EXECUTOR.
+# - SEMPRE invoca skill atômica via Agent tool: /cerebro, /salve, /rotina, /reuniao, /sync, /briefing.
+# - Pra carregar contexto da Eloscope (pendências, decisões), invoque /briefing ou /query — eles usam mcp__elobrain__query (3-layer hybrid search).
+# - PROIBIDO: ctx_execute_file, regex parsing em pendencias.md, leitura literal de arquivos markdown raw.
+#   Isso bypassa o motor semântico do gbrain — destrói embeddings e knowledge graph.
+# - Quando o usuário pede "cockpit" / "me prepara pro dia": invoque /rotina (que faz tudo: emails, calendar, query brain via embeddings, top 3).
+# - Quando pede "salva sessão": invoque /salve (que percorre PROPAGATION.md + commit + push + trigger sync).
 members:
   # Custom Eloscope (vault cerebro)
   - cerebro
