@@ -1,6 +1,20 @@
-# GBrain Skill Resolver
+# elobrain Skill Resolver
 
 This is the dispatcher. Skills are the implementation. **Read the skill file before acting.** If two skills could match, read both. They are designed to chain (e.g., ingest then enrich for each entity).
+
+## Eloscope Orchestrator (high-level entry points)
+
+The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope operator. It classifies intent and delegates to one of the 4 Directors. Use the Coordinator when the operator describes the objective in natural language; use the atomic skills below when invoked directly by name.
+
+| Trigger (natural language) | Skill |
+|---------|-------|
+| Any free-text PT-BR objective ("me prepara pro dia", "salva esse link", "carrossel sobre X") | `skills/elo/SKILL.md` (Coordinator) |
+| Memory/knowledge operations (search, ingest, enrich, briefing) | `skills/elo-brain/SKILL.md` (Director) |
+| Eloscope rituals (cerebro, salve, rotina, reuniao, sync) | `skills/elo-ops/SKILL.md` (Director) |
+| Content production (carrossel, PDF, publish, article) | `skills/elo-content/SKILL.md` (Director) |
+| Sales assets (LP, deck, GTM, playbook) → delegates to `/gos-mission-control` | `skills/elo-vendas/SKILL.md` (Director) |
+
+**Rule:** If the operator already invoked an atomic skill by name (e.g., `/briefing`, `/query`, `/salve`), do NOT intercept — let the skill run directly. The `/elo` Coordinator is for ambiguous natural-language objectives.
 
 ## Always-on (every message)
 

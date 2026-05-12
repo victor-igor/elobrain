@@ -6,12 +6,21 @@ allowed-tools: Agent, Read, Write, Edit, Bash, Glob
 tier: director
 reports_to: elo
 members:
+  # Custom Eloscope (vault cerebro)
   - cerebro
   - salve
   - rotina
+  - reuniao
   - meeting
   - sync
-  - reuniao
+  # Operação / agendamento (gbrain)
+  - daily-task-manager
+  - cron-scheduler
+  - webhook-transforms
+  - minion-orchestrator
+  - smoke-test
+  - skillpack-check
+  - ask-user
 version: 0.1.0
 
 handoff_in:

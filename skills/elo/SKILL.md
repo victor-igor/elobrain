@@ -111,7 +111,47 @@ Casos:
 
 → Devolver: *"Use `/<skill>` direto — já é skill atômica."*
 
-### Bucket 6 — Out-of-scope
+### Bucket 6 — Meta / Manutenção (skill atômica direta)
+
+Objetivo é **infra, qualidade ou meta-tarefa** que tem skill atômica específica. NÃO precisa Director — chame a skill direto via Agent tool.
+
+| Trigger | Skill atômica |
+|---|---|
+| "Audita brain", "saúde do brain", "brain health" | `/maintain` |
+| "Conserta citações", "citation audit" | `/citation-fixer` |
+| "Valida frontmatter", "brain lint" | `/frontmatter-guard` |
+| "Cria nova skill", "skillify isso" | `/skill-creator` ou `/skillify` |
+| "Setup workspace", "primeiro boot" | `/setup` |
+| "Importa Obsidian/Notion/Logseq" | `/migrate` |
+| "Bootstrap brain", "fill my brain", "cold start" | `/cold-start` |
+| "Agenda task recorrente", "cron" | `/cron-scheduler` |
+| "Identidade do agente", "SOUL.md", "USER.md" | `/soul-audit` |
+| "Fan-out paralelo", "spawn agentes", "minions" | `/minion-orchestrator` |
+| "Review por 2º modelo", "cross-modal review" | `/cross-modal-review` |
+| "Configura webhook", "SMS → brain" | `/webhook-transforms` |
+| "Healthcheck skillpack" | `/skillpack-check` |
+| "Smoke test pós-restart" | `/smoke-test` |
+| "Roda test suite" | `/testing` |
+| "Comprimir AGENTS.md/RESOLVER.md" | `/functional-area-resolver` |
+| "Estrutura tipo de arquivo no brain" | `/repo-architecture` |
+| "Pesquisa academica + verificar fonte" | `/academic-verify` |
+| "Pesquisa web com contexto brain" | `/perplexity-research` |
+| "Estrutura dados de email/recurring" | `/data-research` |
+| "Sintetizar conceitos (T1-T4)" | `/concept-synthesis` |
+| "Análise capítulo a capítulo de livro" | `/book-mirror` |
+| "Estrutura texto em artigo (verbatim + insights)" | `/article-enrichment` |
+| "Captura voz com palavras exatas" | `/voice-note-ingest` |
+| "Vídeo/PDF/podcast/screenshot/repo" | `/media-ingest` |
+| "Leitura estratégica de longread" | `/strategic-reading` |
+| "Vasculha arquivo Dropbox/Gmail" | `/archive-crawler` |
+| "Sempre-on captura insights" (já roda em background) | `/signal-detector` |
+| "Page bonita HTML password-protected" | `/publish` |
+| "Brain page → PDF" | `/brain-pdf` |
+
+Resposta do Coordinator:
+> *"Use `/<skill>` direto — é skill atômica."* (e opcional: invoca a skill direta via Agent tool sem passar por Director)
+
+### Bucket 7 — Out-of-scope
 
 Tarefas fora do escopo (contabilidade, RH, decisões legais, atendimento cliente final).
 

@@ -6,12 +6,17 @@ allowed-tools: Agent, Read, Write, Edit, Bash, Glob
 tier: director
 reports_to: elo
 members:
+  # Produção visual
   - carrossel-eloscope
   - brain-pdf
   - publish
+  # Transformação de texto
   - article-enrichment
   - book-mirror
   - reports
+  # Quality gate antes de publicar
+  - cross-modal-review
+  - citation-fixer
 version: 0.1.0
 
 handoff_in:

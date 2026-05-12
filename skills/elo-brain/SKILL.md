@@ -6,16 +6,17 @@ allowed-tools: Agent, Read, Write, Edit, Bash, Glob
 tier: director
 reports_to: elo
 members:
-  - briefing
-  - daily-task-prep
-  - query
+  # Captura / Ingestão
+  - ingest
   - idea-ingest
   - voice-note-ingest
   - media-ingest
   - meeting-ingestion
-  - ingest
-  - enrich
-  - signal-detector
+  - archive-crawler
+  # Busca / Síntese
+  - query
+  - briefing
+  - daily-task-prep
   - perplexity-research
   - data-research
   - strategic-reading
@@ -23,6 +24,15 @@ members:
   - concept-synthesis
   - article-enrichment
   - book-mirror
+  # Enriquecimento / Always-on
+  - enrich
+  - signal-detector
+  - brain-ops
+  # Manutenção do brain (qualidade)
+  - maintain
+  - citation-fixer
+  - frontmatter-guard
+  - repo-architecture
 version: 0.1.0
 
 handoff_in:
