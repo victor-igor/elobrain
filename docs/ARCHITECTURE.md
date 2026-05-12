@@ -36,7 +36,51 @@ A stack tem **6 camadas** (5 visíveis ao usuário + 1 de infra):
 
 ## Árvore de orquestração `/elo`
 
-Quem comanda o quê. O Coordinator no topo, 4 Directors temáticos abaixo, skills/sub-agentes na base:
+Quem comanda o quê. O Coordinator no topo, 4 Directors temáticos abaixo, skills/sub-agentes na base.
+
+### Panorama (ASCII) — funciona em qualquer leitor
+
+```
+                              /elo    ← Coordinator
+                                │       (entende o pedido em PT-BR,
+                                │       escolhe qual Director chamar)
+                                ↓
+     ┌──────────────┬──────────────┴──────────────┬──────────────┐
+     ↓              ↓                             ↓              ↓
+ /elo-brain     /elo-ops                  /elo-content      /elo-vendas
+ ───────────    ─────────                 ────────────      ────────────
+ query          cerebro                   carrossel         (delega pra
+ ingest         salve                     publish           /gos-mission-
+ recall         rotina                    book-mirror       control)
+ idea-ingest    sync                      brain-pdf
+                meeting
+                                                            ← 4 Directors
+                                                              (cada um
+                                                              invoca só
+                                                              suas skills)
+
+
+                          /gos-mission-control  ← Diretor GOS
+                                   │              (sub-agent)
+                                   ↓
+        ┌──────────┬──────────────┬──────────────┬──────────┐
+        ↓          ↓              ↓              ↓          ↓
+    DESCOBERTA  CLIENTE        OUTPUT          GTM        ...
+    ──────────  ───────        ───────         ─────
+    nicho-      cliente-       lp-builder      gtm-
+    explorer    radar          pitch-deck      architect
+    mapear-     meeting-       builder         playbook-
+    nicho       prep                           vendas
+                                                            ← Funcionários
+
+    ┌──────────────────────────────────────────────────────────────┐
+    │  Auditores (Critics) — só GOS:                               │
+    │  /gos-critic-{nicho, lp, deck, playbook}                     │
+    │  conferem cada saída antes de aprovar                        │
+    └──────────────────────────────────────────────────────────────┘
+```
+
+### Detalhe interativo (Mermaid) — renderiza no GitHub
 
 ```mermaid
 graph TD
