@@ -37,6 +37,13 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | Share a brain page as a link | `skills/publish/SKILL.md` |
 | "validate frontmatter", "check frontmatter", "fix frontmatter", "frontmatter audit", "brain lint" | `skills/frontmatter-guard/SKILL.md` |
 
+## Content production (Instagram)
+
+| Trigger | Skill |
+|---------|-------|
+| "post instagram", "post estático", "cria post", "conteúdo instagram", "carrossel para cliente", "post para cliente", "feed instagram" | `skills/post-instagram/SKILL.md` |
+| "carrossel eloscope" (legado) | `skills/carrossel-eloscope/SKILL.md` (substituído por post-instagram para novos conteúdos) |
+
 ## Content & media ingestion
 
 | Trigger | Skill |
