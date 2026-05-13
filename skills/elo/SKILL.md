@@ -38,6 +38,7 @@ quality_gates:
   - "Modo (inline ou sub-agent) escolhido segundo tabela de decisão"
   - "TODA consulta ao brain via mcp__elobrain__* (nunca Read raw em pages)"
   - "Out-of-scope retorna recusa amigável (não improvisa)"
+  - "Todo artefato gerado salvo como arquivo físico em cerebro/ + slug elobrain no mesmo caminho"
 ---
 
 # /elo — Coordinator (Eloscope)
@@ -238,12 +239,37 @@ Aplica tabela mestre. Casos ambíguos: pergunta.
 
 ### Passo 3 — Executar
 
-**INLINE:** lê o Director SKILL.md, segue pipeline, chama MCP direto.
+**⚠️ REGRA CRÍTICA — VALE PRA INLINE E SUB-AGENT:**
+A PRIMEIRA tool call de qualquer execução DEVE ser `mcp__elobrain__*`.
+Nunca usar Read, Bash, ctx_execute, ctx_search ou qualquer outra tool antes disso.
+O context-mode hook intercepta Read/Bash — mas não toca MCP tools. Começar por MCP é a única proteção.
+
+**INLINE:** lê o Director SKILL.md, segue pipeline, chama `mcp__elobrain__query` ou `mcp__elobrain__search` PRIMEIRO, depois demais tools.
 **SUB-AGENT:** invoca via `Agent` tool com prompt obrigatório do MCP.
+
+### Passo 3.5 — Salvar artefatos (OBRIGATÓRIO para todo output gerado)
+
+Sempre que o pipeline gerar qualquer artefato (copy, bio, LP, pesquisa, carrossel, deck, etc.):
+
+1. **Arquivo físico** em `cerebro/[área]/[subpasta]/[nome].md`
+2. **Slug elobrain** via `mcp__elobrain__put_page` no caminho espelhado
+
+**Mapeamento de áreas:**
+
+| Tipo de artefato | Caminho no cerebro |
+|---|---|
+| Copy / bio / redes sociais | `cerebro/areas/marketing/projetos/[canal]/` |
+| Pesquisa de mercado | `cerebro/areas/marketing/estrategia/` |
+| LP / deck / proposta | `cerebro/empresa/projetos/[projeto]/` |
+| Carrossel / conteúdo | `cerebro/areas/marketing/cortes-conteudo/` |
+| Outros | `cerebro/areas/[área-mais-próxima]/` |
+
+> O slug do elobrain deve espelhar exatamente o path do cerebro (sem o prefixo `cerebro/`).
+> Ex: arquivo em `cerebro/areas/marketing/projetos/instagram/bio.md` → slug `areas/marketing/projetos/instagram/bio`
 
 ### Passo 4 — Devolver
 
-Formatar curto (3-5 linhas). Mostrar artefatos + citações principais.
+Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do arquivo criado.
 
 ---
 
