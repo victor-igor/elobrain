@@ -1,0 +1,11 @@
+{
+  "tools": {
+    "media": {
+      "audio": { "echoTranscript": false },
+      "models": [
+        { "provider": "google", "model": "gemini-2.5-flash", "capabilities": ["audio"], "type": "provider" },
+        { "provider": "openai", "model": "whisper-1",        "capabilities": ["audio"], "type": "provider" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "agents": {
+    "defaults": {
+      "heartbeat": {
+        "every": "1h",
+        "activeHours": {
+          "start": "06:00",
+          "end": "20:00",
+          "timezone": "America/Sao_Paulo"
+        },
+        "model": "Gemini 2.5 Flash",
+        "lightContext": true,
+        "isolatedSession": true,
+        "includeReasoning": false,
+        "includeSystemPromptSection": false,
+        "suppressToolErrorWarnings": true
+      }
+    }
+  }
+}

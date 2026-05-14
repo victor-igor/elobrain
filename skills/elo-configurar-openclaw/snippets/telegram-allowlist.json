@@ -1,0 +1,16 @@
+{
+  "_comment": "Substitua <SEU_TELEGRAM_ID> pelo ID numérico (não username). Descobrir via gateway logs.",
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true,
+        "config": {
+          "dmPolicy": "allowlist",
+          "allowlist": ["<SEU_TELEGRAM_ID>"],
+          "streaming": true,
+          "topicsEnabled": true
+        }
+      }
+    }
+  }
+}

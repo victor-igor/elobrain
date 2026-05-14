@@ -1,0 +1,32 @@
+{
+  "agents": {
+    "list": [
+      { "id": "main", "name": "main", "model": "openai/gpt-4.1" }
+    ],
+    "defaults": {
+      "model": {
+        "primary": "ChatGPT 4.1",
+        "fallbacks": ["ChatGPT 5.2", "Gemini 2.5 Flash"]
+      },
+      "imageModel": {
+        "primary": "Gemini 2.5 Flash",
+        "fallbacks": ["ChatGPT 4.1"]
+      },
+      "pdfModel": {
+        "primary": "ChatGPT 4.1",
+        "fallbacks": ["Gemini 2.5 Flash"]
+      },
+      "subagents": {
+        "model": {
+          "primary": "ChatGPT 4.1",
+          "fallbacks": ["Gemini 2.5 Flash"]
+        },
+        "thinking": "off",
+        "maxConcurrent": 2,
+        "maxChildrenPerAgent": 5,
+        "maxSpawnDepth": 1
+      },
+      "thinkingDefault": "low"
+    }
+  }
+}

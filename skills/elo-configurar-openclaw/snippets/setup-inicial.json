@@ -1,0 +1,12 @@
+{
+  "_comment": "Setup inicial recomendado: tools.profile=full + thinking low + compaction safeguard. Aplicar logo após onboard.",
+  "tools": { "profile": "full" },
+  "agents": {
+    "defaults": {
+      "thinkingDefault": "low",
+      "compaction": { "mode": "safeguard" },
+      "contextTokens": 160000,
+      "reserveTokensFloor": 30000
+    }
+  }
+}

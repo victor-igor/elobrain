@@ -1,0 +1,21 @@
+{
+  "plugins": {
+    "entries": {
+      "active-memory": {
+        "enabled": true,
+        "config": {
+          "enabled": true,
+          "model": "ChatGPT 4.1",
+          "modelFallback": "Gemini 2.5 Flash",
+          "thinking": "off",
+          "timeoutMs": 15000,
+          "queryMode": "recent",
+          "maxSummaryChars": 1000,
+          "recentUserTurns": 3,
+          "recentAssistantTurns": 3,
+          "logging": false
+        }
+      }
+    }
+  }
+}

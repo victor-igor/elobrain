@@ -1,0 +1,16 @@
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 8000,
+          "forceFlushTranscriptBytes": "2mb"
+        }
+      },
+      "contextTokens": 160000,
+      "reserveTokensFloor": 30000
+    }
+  }
+}

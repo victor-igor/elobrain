@@ -1,0 +1,16 @@
+{
+  "_comment": "Substitua <SEU_TELEFONE_E164> por +55... (formato E.164, sem espaços).",
+  "plugins": {
+    "entries": {
+      "whatsapp": {
+        "enabled": true,
+        "config": {
+          "dmPolicy": "allowlist",
+          "allowlist": ["<SEU_TELEFONE_E164>"],
+          "debounceMs": 4000,
+          "groupPolicy": "deny"
+        }
+      }
+    }
+  }
+}

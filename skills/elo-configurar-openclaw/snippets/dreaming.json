@@ -1,0 +1,23 @@
+{
+  "plugins": {
+    "entries": {
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true,
+            "frequency": "0 3 * * *",
+            "timezone": "America/Sao_Paulo",
+            "verboseLogging": false,
+            "storage": { "mode": "separate", "separateReports": true },
+            "phases": {
+              "light": { "enabled": true, "lookbackDays": 1, "limit": 50, "dedupeSimilarity": 0.85 },
+              "deep":  { "enabled": true, "limit": 10, "minScore": 0.5, "minRecallCount": 1, "minUniqueQueries": 1, "recencyHalfLifeDays": 14, "maxAgeDays": 90 },
+              "rem":   { "enabled": true, "lookbackDays": 7, "limit": 5, "minPatternStrength": 0.3 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

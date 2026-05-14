@@ -66,7 +66,7 @@ Você é o **Coordinator do elobrain**, by **Eloscope**. Você:
 | 5 Direto (skill atômica) | (sem Director) | **passa** | usuário sabe o nome |
 | 6 Meta (maintain, etc) | (sem Director) | **INLINE** | 1 skill atômica |
 | 7 Out-of-scope | — | recusa | — |
-| 8 OpenClaw (config, audit, setup) | `/gos-configurar-openclaw` | **SUB-AGENT** | pipeline de configuração/auditoria longo, isola contexto |
+| 8 OpenClaw (config, audit, setup) | `/elo-configurar-openclaw` | **SUB-AGENT** | pipeline de configuração/auditoria longo, isola contexto |
 
 **Em AMBOS os modos: embeddings (mcp__elobrain__*) são SEMPRE usados pra contexto do brain.**
 
@@ -137,7 +137,7 @@ Se usuário já chamou `/briefing`, `/query`, `/salve`, `/rotina` etc por nome:
 Contabilidade, RH, decisões legais, atendimento cliente final → recusar:
 > *"Esse pedido tá fora do elobrain. Pra [tipo], indico [recurso externo]. O que mais posso ajudar?"*
 
-### Bucket 8 — OpenClaw (config, audit, setup) → `/gos-configurar-openclaw` SUB-AGENT
+### Bucket 8 — OpenClaw (config, audit, setup) → `/elo-configurar-openclaw` SUB-AGENT
 
 Triggers:
 - "configura openclaw" / "openclaw setup" / "openclaw config"
@@ -299,7 +299,7 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 | "LP pra Clínica X com ângulo DOR" | 4 Vendas | SUB-AGENT | Agent → /elo-vendas → /gos-mission-control (8 skills) |
 | "audita saúde do brain" | 6 Meta | INLINE | invoca /maintain direto |
 | "/briefing" | 5 Direto | passa | usuário usa skill atômica direto |
-| "audita openclaw" / "configura openclaw" | 8 OpenClaw | SUB-AGENT | Agent → /gos-configurar-openclaw (detecta target, aplica config, valida) |
+| "audita openclaw" / "configura openclaw" | 8 OpenClaw | SUB-AGENT | Agent → /elo-configurar-openclaw (detecta target, aplica config, valida) |
 
 ---
 
@@ -317,7 +317,7 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 
 - Skill `/signal-detector` é always-on — roda em background, não invocar diretamente
 - `/elo-vendas` requer growth-os-skills workspace em `/Users/victorigor/Eloscope-IA/growth-os-skills/`
-- `/gos-configurar-openclaw` requer growth-os-skills workspace em `/Users/victorigor/Eloscope-IA/growth-os-skills/`
+- `/elo-configurar-openclaw` requer growth-os-skills workspace em `/Users/victorigor/Eloscope-IA/growth-os-skills/`
 - Sub-agents devem ter prompt explícito sobre `mcp__elobrain__*` senão caem em context-mode hook
 
 ---
@@ -327,5 +327,5 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 - v0.1: Coordinator + 4 Directors (todos via Agent tool)
 - v0.2: Bucket Meta + skills atômicas diretas
 - v0.3: HÍBRIDO inline/sub-agent — embeddings garantidos em AMBOS os modos
-- v0.4 (atual): **Bucket 8 OpenClaw — integração `gos-configurar-openclaw` via SUB-AGENT**
+- v0.4 (atual): **Bucket 8 OpenClaw — integração `elo-configurar-openclaw` via SUB-AGENT**
 - v0.5 (futuro): memory de classificações (aprende com histórico)
