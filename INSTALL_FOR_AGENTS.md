@@ -1,7 +1,34 @@
 # Elobrain Installation Guide for AI Agents
 
 Read this entire file, then follow the steps. Ask the user for API keys when needed.
-Target: ~30 minutes to a fully working brain.
+
+---
+
+## Which scenario applies?
+
+**Ask the user before anything else:**
+> "Você está instalando o elobrain do zero para uma empresa/equipe, ou está se conectando a um brain que já existe?"
+
+| Resposta | Trilha | Tempo estimado |
+|---|---|---|
+| **Do zero** — nova empresa ou nova equipe, sem brain existente | Siga todos os passos (1 → 9) | ~30 min |
+| **Conectando** — brain já existe, você só está entrando na equipe | Siga apenas os passos 1, 2, 2.1-A, 3 (init only), 5, 6 | ~10 min |
+
+### Trilha: Conectando a um brain existente (resumo)
+
+Se o brain já existe (Supabase já provisionado, dados já indexados), o membro da equipe precisa apenas:
+
+1. **Step 1** — instalar o CLI (`git clone + bun link`)
+2. **Step 2** — chaves OpenAI/Anthropic (pedir ao gestor da equipe ou usar as da empresa)
+3. **Step 2.1-A** — chaves Supabase do projeto existente (pedir ao gestor: `SUPABASE_URL` + `SERVICE_ROLE_KEY`)
+4. **Step 3** — rodar `gbrain init` para aplicar migrations pendentes (dados preservados) + `gbrain doctor`
+5. Rodar `gbrain sync` uma vez para puxar o estado atual do brain
+6. **Step 5** — carregar skills
+7. **Step 6** — identidade pessoal (soul-audit cria perfil individual, não afeta os dados compartilhados)
+
+Pule Steps 4, 4.5, 7, 8, 9 — esses são de setup inicial e já foram feitos pelo instalador original.
+
+---
 
 ## Step 0: If you are not Claude Code
 
@@ -42,6 +69,68 @@ export ANTHROPIC_API_KEY=sk-ant-...   # optional, improves search quality
 
 Save to shell profile or `.env`. Without OpenAI, keyword search still works.
 Without Anthropic, search works but skips query expansion.
+
+### Step 2.1: Supabase Backend (optional)
+
+If the user wants a Postgres-backed brain instead of the default PGLite (recommended
+for multi-agent setups, large brains, or remote access), follow the decision flow
+below before asking for credentials.
+
+**Ask the user:**
+> "Você já tem um projeto Supabase criado para o elobrain?"
+
+---
+
+#### Caminho A — Projeto já existe (resposta: SIM)
+
+Ask for the two required values (Supabase dashboard → Project Settings → API):
+
+```bash
+export SUPABASE_URL=https://<project-ref>.supabase.co
+export SUPABASE_SERVICE_ROLE_KEY=eyJ...   # service role key (not anon key)
+export GBRAIN_DB_BACKEND=supabase
+```
+
+Save to shell profile or `.env`, then proceed to Step 3.
+`gbrain init` will detect the existing schema and apply only missing migrations —
+**existing data is preserved.**
+
+---
+
+#### Caminho B — Projeto ainda não existe (resposta: NÃO)
+
+Guide the user through project creation first, then collect credentials.
+
+**Option B1 — Supabase Console (no CLI needed):**
+1. Go to https://supabase.com/dashboard → "New project"
+2. Choose org, set a project name (e.g. `elobrain`), region, and password
+3. Wait for provisioning (~1 min)
+4. Go to Project Settings → API → copy **Project URL** and **service_role** key
+
+**Option B2 — Supabase CLI:**
+```bash
+brew install supabase/tap/supabase   # or see supabase.com/docs/guides/cli
+supabase login
+supabase projects create elobrain --org-id <your-org-id> --region us-east-1 \
+  --db-password <strong-password>
+# After creation, retrieve the keys:
+supabase projects list               # find the project ref
+supabase projects api-keys --project-ref <ref>
+```
+
+Once the project exists, set the env vars and proceed to Step 3.
+`gbrain init` will create all tables, indexes, and RLS policies from scratch
+in the new project — **nothing needs to be done manually in Supabase SQL editor.**
+
+---
+
+**Why service role key (not anon key):** gbrain needs full schema access to apply
+migrations and manage RLS policies. The anon key is read-limited and will fail.
+
+**Why Supabase:** PGLite is local-only. Supabase enables multi-device sync,
+multi-agent reads, and pgvector for native embedding search without OpenAI.
+If the user is unsure, default to PGLite (Step 3) and migrate later with
+`gbrain migrate-backend --to supabase`.
 
 ## Step 3: Create the Brain
 
