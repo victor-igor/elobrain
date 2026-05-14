@@ -215,7 +215,7 @@ If skipped, minimal defaults are installed automatically.
 
 Set up using your platform's scheduler (OpenClaw cron, Railway cron, crontab):
 
-- **Live sync** (every 15 min): `gbrain sync --repo ~/brain && gbrain embed --stale`
+- **Live sync** (every 15 min): `git -C ~/brain pull --rebase origin main && gbrain sync --repo ~/brain && gbrain embed --stale`
 - **Auto-update** (daily): `gbrain check-update --json` (tell user, never auto-install)
 - **Dream cycle** (nightly): read `docs/guides/cron-schedule.md` for the full protocol.
   Entity sweep, citation fixes, memory consolidation, plus (v0.23+) overnight conversation
