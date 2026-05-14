@@ -13,6 +13,8 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | Eloscope rituals (cerebro, salve, rotina, reuniao, sync) | `skills/elo-ops/SKILL.md` (Director) |
 | Content production (carrossel, PDF, publish, article) | `skills/elo-content/SKILL.md` (Director) |
 | Sales assets (LP, deck, GTM, playbook) → delegates to `/gos-mission-control` | `skills/elo-vendas/SKILL.md` (Director) |
+| "configura openclaw", "audita openclaw", "openclaw setup", "aplica melhorias openclaw" | `skills/elo-configurar-openclaw/SKILL.md` |
+| "onboarding eloscope", "setup do time", "elo setup", "configurar elobrain novo membro" | `skills/elo-setup/SKILL.md` |
 
 **Rule:** If the operator already invoked an atomic skill by name (e.g., `/briefing`, `/query`, `/salve`), do NOT intercept — let the skill run directly. The `/elo` Coordinator is for ambiguous natural-language objectives.
 
@@ -84,12 +86,14 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | Webhook setup, external event processing | `skills/webhook-transforms/SKILL.md` |
 | "Spawn agent", "background task", "parallel tasks", "steer agent", "pause/resume agent", "gbrain jobs submit", "submit a gbrain job", "submit a shell job", "shell job" | `skills/minion-orchestrator/SKILL.md` |
 | "present options", "ask before proceeding", "choice gate", "user decision" | `skills/ask-user/SKILL.md` |
+| "salve", "salva", "salva a sessão", "flush", "fecha a sessão" | `skills/salve/SKILL.md` |
 
 ## Setup & migration
 
 | Trigger | Skill |
 |---------|-------|
 | "Set up GBrain", first boot | `skills/setup/SKILL.md` |
+| "install elobrain", "instalar elobrain", "how to install" | `skills/install/SKILL.md` |
 | "Now what?", "fill my brain", "cold start", "bootstrap", "import my data", "what should I import first" | `skills/cold-start/SKILL.md` |
 | "Migrate from Obsidian/Notion/Logseq" | `skills/migrate/SKILL.md` |
 | Brain health check, maintenance run | `skills/maintain/SKILL.md` |
