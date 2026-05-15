@@ -6,8 +6,13 @@ description: >
   do manifest.json, integração com /elo (coordinator) e Directors (/elo-ops, /elo-content, /elo-vendas),
   sync pra ~/.claude/skills/, commit + push no repo certo, criação de task no ClickUp e notificação
   do time. Substitui a disciplina manual por checklist auditável.
-  Triggers: "criar skill", "/criar-skill", "nova skill", "skill nova", "skillify",
-  "preciso criar uma skill", "como crio uma skill".
+triggers:
+  - "/criar-skill"
+  - "criar skill Eloscope"
+  - "nova skill elobrain"
+  - "preciso criar uma skill"
+  - "skillify Eloscope"
+  - "criar skill nova"
 ---
 
 # /criar-skill

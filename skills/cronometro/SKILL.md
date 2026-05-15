@@ -5,8 +5,18 @@ description: >
   para e adiciona comentário quando termina. Inverso do /validar-sessao (que estima tempo no fim
   do dia). Sub-comandos: start, stop, pause, resume, status, switch. Estado persistente em
   ~/.claude/state/cronometro.json sobrevive entre sessões.
-  Triggers: "cronometro", "/cronometro", "iniciar tarefa", "parar timer", "começar tarefa",
-  "vou começar X", "parar tarefa", "pausar timer".
+triggers:
+  - "/cronometro"
+  - "cronometro start"
+  - "cronometro stop"
+  - "cronometro status"
+  - "cronometro switch"
+  - "iniciar tarefa"
+  - "parar timer"
+  - "começar tarefa"
+  - "vou começar"
+  - "trocar tarefa"
+  - "status do timer"
 ---
 
 # /cronometro

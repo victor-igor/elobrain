@@ -1,6 +1,13 @@
 ---
 name: validar-sessao
-description: Valida o trabalho da sessão contra ClickUp — compara projetos, usuário, tarefas, subtarefas e prazos. Marca tasks completas como done, atualiza parciais com comentário, cria as que faltam, identifica e remove duplicatas. Roda antes do /salve para garantir que o ClickUp reflita o que foi feito de verdade. Triggers — "valida sessão", "valida clickup", "/validar-sessao", "/valida".
+description: Valida o trabalho da sessão contra ClickUp — compara projetos, usuário, tarefas, subtarefas e prazos. Marca tasks completas como done, atualiza parciais com comentário, cria as que faltam, identifica e remove duplicatas. Roda antes do /salve para garantir que o ClickUp reflita o que foi feito de verdade.
+triggers:
+  - "/validar-sessao"
+  - "valida sessão"
+  - "valida clickup"
+  - "reconcilia clickup tasks"
+  - "validar sessão de trabalho"
+  - "validar tarefas da sessão"
 ---
 
 # /validar-sessao

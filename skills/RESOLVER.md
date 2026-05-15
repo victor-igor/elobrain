@@ -87,7 +87,7 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | "Spawn agent", "background task", "parallel tasks", "steer agent", "pause/resume agent", "gbrain jobs submit", "submit a gbrain job", "submit a shell job", "shell job" | `skills/minion-orchestrator/SKILL.md` |
 | "present options", "ask before proceeding", "choice gate", "user decision" | `skills/ask-user/SKILL.md` |
 | "salve", "salva", "salva a sessão", "flush", "fecha a sessão" | `skills/salve/SKILL.md` |
-| "valida sessão", "valida clickup", "reconcilia clickup", "/validar-sessao", "/valida" | `skills/validar-sessao/SKILL.md` |
+| "valida sessão", "valida clickup", "reconcilia clickup tasks", "/validar-sessao", "validar sessão de trabalho" | `skills/validar-sessao/SKILL.md` |
 | "cronometro", "/cronometro", "iniciar tarefa", "começar tarefa", "parar timer", "vou começar X", "status timer", "switch task" | `skills/cronometro/SKILL.md` |
 | "criar skill Eloscope", "nova skill elobrain", "/criar-skill", "preciso criar uma skill", "skillify Eloscope" | `skills/criar-skill/SKILL.md` |
 
