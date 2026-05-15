@@ -2,7 +2,7 @@
   "name": "gbrain",
   "version": "0.32.3.0",
   "conformance_version": "1.0.0",
-  "description": "Personal knowledge brain with hybrid RAG search \u2014 GStack mod for agent platforms",
+  "description": "Personal knowledge brain with hybrid RAG search — GStack mod for agent platforms",
   "skills": [
     {
       "name": "ingest",
@@ -228,6 +228,56 @@
       "name": "criar-skill",
       "path": "criar-skill/SKILL.md",
       "description": "Meta-skill orquestradora pra criar skills novas seguindo TODOS os processos certos: classificação framework vs cliente-only, path correto (elobrain ou cerebro), frontmatter padronizado, atualização do manifest.json, integração com /elo (coordinator) e Directors (/elo-ops, /elo-content, /elo-vendas), sync pra ~/.claude/skills/, commit + push no repo certo, criação de task no ClickUp e notificação do time. Substitui a disciplina manual por checklist auditável. Triggers: 'criar skill', '/criar-skill', 'nova skill', 'skill nova', 'skillify'."
+    },
+    {
+      "name": "elo",
+      "path": "elo/SKILL.md",
+      "description": "Coordinator do elobrain (by Eloscope). Recebe objetivo em linguagem natural (PT-BR), classifica intent, e executa pipeline do Director correspondente — INLINE pra tarefas curtas (cockpit, query, ingest) ou via SUB-AGENT pra pipelines longos (vendas, book-mirror). Em AMBOS os modos usa mcp__elobrain__* (busca semântica + embeddings + graph)."
+    },
+    {
+      "name": "elo-brain",
+      "path": "elo-brain/SKILL.md",
+      "description": "Director de memória e conhecimento do elobrain. Executa INLINE (mesma sessão) com mcp__elobrain__* direto pra buscas/ingest. Faz busca semântica (embeddings 1536-dim no pgvector) + knowledge graph (164 links tipados) com citações por slug. Pra book-mirror e tarefas pesadas, opcionalmente delega via Agent tool."
+    },
+    {
+      "name": "elo-ops",
+      "path": "elo-ops/SKILL.md",
+      "description": "Director de operação Eloscope. Executa rituais diários — INLINE pra cockpit/abertura/salve/sync (rápido, MCP direto + skills custom), SUB-AGENT pra reuniao (Fathom + análise C-Level + enrich, 5-15min). Em AMBOS os modos usa mcp__elobrain__* pra contexto do brain (busca semântica + graph)."
+    },
+    {
+      "name": "elo-content",
+      "path": "elo-content/SKILL.md",
+      "description": "Director de produção de conteúdo. INLINE pra carrossel/PDF/publish/artigo (rápido, MCP direto). SUB-AGENT pra book-mirror (longo, isolado). Sempre puxa contexto do brain via mcp__elobrain__query (embeddings semânticos), nunca lê markdown raw."
+    },
+    {
+      "name": "elo-vendas",
+      "path": "elo-vendas/SKILL.md",
+      "description": "Director de vendas (Sales & Positioning). SUB-AGENT obrigatório (pipelines longos 8+ skills). Antes de delegar pro /gos-mission-control, puxa contexto do cliente/nicho via mcp__elobrain__query (embeddings semânticos do brain). Sub-agent recebe prompt obrigatório sobre uso de MCP — nunca lê markdown raw."
+    },
+    {
+      "name": "elo-configurar-openclaw",
+      "path": "elo-configurar-openclaw/SKILL.md",
+      "description": "Configurar e auditar uma instância OpenClaw (local ou remota via SSH, bare metal ou Docker Compose) através do Claude Code. Inclui modo audit (\"analisa e aplica melhorias automaticamente\"). Cobre setup inicial, providers/modelos, roteamento multi-modelo, heartbeat, proatividade (HEARTBEAT.md, mandato, crons), compaction, plugins, skills customizadas, canais (Telegram/WhatsApp), mídia/áudio, arquitetura de memória, segurança (UFW, fail2ban, secrets, Cloudflare Tunnel) e diagnóstico. Triggers: \"co"
+    },
+    {
+      "name": "elo-setup",
+      "path": "elo-setup/SKILL.md",
+      "description": "Onboarding completo do sistema /elo para novo membro do time Eloscope. Instala elobrain, configura MCP, plugins, skills e cria perfil no brain compartilhado."
+    },
+    {
+      "name": "post-instagram",
+      "path": "post-instagram/SKILL.md",
+      "description": "|"
+    },
+    {
+      "name": "salve",
+      "path": "salve/SKILL.md",
+      "description": "Flush de fim de sessão — captura tudo que aconteceu e atualiza o segundo cérebro. Percorre todas as áreas (pendências, decisões, pessoas, projetos, métricas, skills) e garante que nada se perde entre sessões. Sempre rodar antes de fechar."
+    },
+    {
+      "name": "install",
+      "path": "install/SKILL.md",
+      "description": "Skill install (description pending)"
     }
   ],
   "dependencies": {

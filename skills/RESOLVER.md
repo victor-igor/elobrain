@@ -44,7 +44,7 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | Trigger | Skill |
 |---------|-------|
 | "post instagram", "post estático", "cria post", "conteúdo instagram", "carrossel para cliente", "post para cliente", "feed instagram" | `skills/post-instagram/SKILL.md` |
-| "carrossel eloscope" (legado) | `skills/carrossel-eloscope/SKILL.md` (substituído por post-instagram para novos conteúdos) |
+| "carrossel eloscope" (Eloscope-only, mora no cerebro — roteado via /elo Bucket 3 Content) | — |
 
 ## Content & media ingestion
 
