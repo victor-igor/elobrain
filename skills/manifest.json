@@ -213,6 +213,11 @@
       "name": "functional-area-resolver",
       "path": "functional-area-resolver/SKILL.md",
       "description": "Compress an agent's routing file (RESOLVER.md or AGENTS.md) by replacing skill-per-row tables with functional-area dispatcher entries. Two-layer dispatch keeps every sub-skill reachable at ~50% of the file size."
+    },
+    {
+      "name": "validar-sessao",
+      "path": "validar-sessao/SKILL.md",
+      "description": "Valida o trabalho da sessão contra ClickUp — compara projetos, usuário, tarefas, subtarefas e prazos. Marca tasks completas como done, atualiza parciais com comentário, cria as que faltam, identifica e remove duplicatas. Roda antes do /salve para garantir que o ClickUp reflita o que foi feito de verdade. Triggers: 'valida sessão', 'valida clickup', '/validar-sessao', '/valida'."
     }
   ],
   "dependencies": {
