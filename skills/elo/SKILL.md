@@ -91,6 +91,11 @@ Triggers:
 - "Cockpit" / "Rotina" / "O que tenho hoje"
 - "Sync" / "Sincroniza"
 - "Salva sessão" / "Flush" / "Fecha"
+- "Valida sessão" / "Valida clickup" / "Reconciliar tasks" → `/validar-sessao`
+- "Começar tarefa" / "Iniciar timer" / "Vou começar X" → `/cronometro start <X>`
+- "Parar timer" / "Parar cronômetro" / "Terminei" → `/cronometro stop`
+- "Status do timer" / "Qual task tô" → `/cronometro status`
+- "Trocar tarefa" / "Mudar timer pra X" → `/cronometro switch <X>`
 
 ### Bucket 2.5 — Ops longas → `/elo-ops` SUB-AGENT
 
@@ -302,6 +307,9 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 | "/briefing" | 5 Direto | passa | usuário usa skill atômica direto |
 | "audita openclaw" / "configura openclaw" | 8 OpenClaw | SUB-AGENT | Agent → /elo-configurar-openclaw (detecta target, aplica config, valida) |
 | "criar agente WhatsApp pra X" / "agente n8n nicho Y" | 4 Vendas | SUB-AGENT | Agent → /elo-vendas → /gos-agente-builder (coleta contexto, gera system prompt + RAG + playbook) |
+| "vou começar a ajustar prompt Campos" | 2 Ops | INLINE | /cronometro start (busca task ClickUp + inicia timer real) |
+| "parei essa task" / "terminei" | 2 Ops | INLINE | /cronometro stop (para timer + comenta + pergunta status) |
+| "valida sessão" / "reconcilia ClickUp" | 2 Ops | INLINE | /validar-sessao (filter_tasks + classifica + aprova batch + executa) |
 
 ---
 

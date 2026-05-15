@@ -29,6 +29,9 @@ members:
   - reuniao
   - meeting
   - sync
+  # Time tracking + ClickUp sync (elobrain framework)
+  - validar-sessao
+  - cronometro
   # Operação / agendamento (gbrain)
   - daily-task-manager
   - cron-scheduler
@@ -37,14 +40,14 @@ members:
   - smoke-test
   - skillpack-check
   - ask-user
-version: 0.3.0
+version: 0.4.0
 
 handoff_in:
   required:
     objective: "Ritual operacional a executar"
   optional:
-    pipeline: "abertura | cockpit | fechamento | reuniao | sync-manual"
-    context: "Contexto (qual reunião, qual sessão, etc)"
+    pipeline: "abertura | cockpit | fechamento | reuniao | sync-manual | validar-clickup | cronometro-start | cronometro-stop"
+    context: "Contexto (qual reunião, qual sessão, qual task, etc)"
 
 handoff_out:
   produces:
