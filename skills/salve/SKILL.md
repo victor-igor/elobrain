@@ -239,6 +239,28 @@ find ~/.claude/skills -type l ! -exec test -e {} \; -print 2>/dev/null | while r
 done
 ```
 
+### 4.6.d.2 — Audit: drift entre manifest.json e RESOLVER.md
+
+Detecta skills que estão registradas em só um dos dois lugares — ambos precisam estar em sync pra OpenClaw + gbrain runtime + Claude Code verem a skill.
+
+```bash
+# Skills no manifest mas faltando no RESOLVER.md
+manifest_skills=$(jq -r '.skills[].name' ~/elobrain/skills/manifest.json 2>/dev/null)
+for skill in $manifest_skills; do
+  if ! grep -q "skills/$skill/SKILL.md" ~/elobrain/skills/RESOLVER.md 2>/dev/null; then
+    echo "🟠 DRIFT: '$skill' está em manifest.json mas NÃO em RESOLVER.md — OpenClaw fica cego"
+  fi
+done
+
+# Skills no RESOLVER.md mas faltando no manifest
+resolver_skills=$(grep -oE 'skills/[a-z-]+/SKILL\.md' ~/elobrain/skills/RESOLVER.md | sed 's|skills/||; s|/SKILL.md||' | sort -u)
+for skill in $resolver_skills; do
+  if ! echo "$manifest_skills" | grep -qx "$skill"; then
+    echo "🟠 DRIFT: '$skill' está em RESOLVER.md mas NÃO em manifest.json — gbrain runtime fica cego"
+  fi
+done
+```
+
 ### 4.6.e — Audit: plugins externos atrasados
 
 ```bash

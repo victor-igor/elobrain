@@ -38,7 +38,37 @@ A skill faz tudo isso em batch com aprovação por etapa.
 
 ---
 
-## Pipeline (12 passos)
+## Pipeline (13 passos + audit)
+
+### Passo 0 — MECE check (anti-duplicação)
+
+**Antes de perguntar QUALQUER coisa ao usuário,** verificar se já existe skill com escopo sobreposto.
+
+```bash
+# Ler manifest.json e RESOLVER.md
+grep -i "<nome ou trigger candidato>" ~/elobrain/skills/manifest.json ~/elobrain/skills/RESOLVER.md
+```
+
+Se houver match parcial → mostrar ao usuário ANTES de continuar:
+
+```
+🟡 Possível sobreposição detectada:
+
+Você descreveu: "<descrição da skill nova>"
+
+Skill existente que pode cobrir isso:
+- /<nome-existente>: "<descrição>"
+  Triggers: <triggers atuais>
+
+Opções:
+[1] Cancelar — usar a skill existente
+[2] Estender a skill existente (adicionar trigger novo + passo extra)
+[3] Continuar criando nova (escopo realmente diferente — justificar)
+```
+
+Bloquear até resolução. Aceitar `[3]` só com justificativa do usuário no campo `mece_justification`.
+
+---
 
 ### Passo 1 — Coletar requirements (interativo, 1 pergunta por vez)
 
@@ -110,7 +140,7 @@ Aprovar? [s/edit/n]
 
 ### Passo 3 — Gerar SKILL.md no template padrão
 
-Estrutura mínima:
+Estrutura padronizada **híbrida Eloscope + skill-creator** (strict superset):
 
 ```markdown
 ---
@@ -130,7 +160,7 @@ description: >
 
 ## Por que existe
 
-<problema que resolve>
+<problema que resolve — motivação humana>
 
 ---
 
@@ -139,7 +169,24 @@ description: >
 - <gatilhos de uso>
 
 Não rodar:
-- <anti-patterns>
+- <quando NÃO usar>
+
+---
+
+## Contract
+
+**Input:** <o que a skill espera receber (linguagem natural, arquivo, parâmetros)>
+**Output:** <o que ela produz (arquivos, tasks, comentários, estados)>
+**Side effects:** <o que muda externamente (ClickUp, WhatsApp, git, etc.)>
+**Guarantees:** <invariantes — ex: sempre confirma antes de executar, idempotente, etc.>
+
+---
+
+## Tools Used
+
+- **MCP:** <lista de tools MCP usadas — clickup, elobrain, whatsapp, etc.>
+- **Files:** <arquivos lidos/escritos — paths>
+- **External:** <APIs externas, comandos shell>
 
 ---
 
@@ -155,16 +202,24 @@ Não rodar:
 
 ---
 
+## Anti-Patterns
+
+- ❌ <erro comum 1 — o que NÃO fazer e por quê>
+- ❌ <erro comum 2>
+- ❌ <erro comum 3>
+
+---
+
 ## Regras
 
-- <regra 1>
-- <regra 2>
+- ✅ <invariante 1 — o que SEMPRE fazer>
+- ✅ <invariante 2>
 
 ---
 
 ## Convenções
 
-<formatação, status, datas, etc.>
+<formatação de output, naming, status, datas, etc.>
 ```
 
 Salvar no path correto:
@@ -196,6 +251,29 @@ Editar `~/elobrain/skills/elo/SKILL.md`:
    ```
    | "<frase do usuário>" | <bucket> | INLINE/SUB-AGENT | invoca /<skill> |
    ```
+
+### Passo 5.5 — Atualizar RESOLVER.md (sempre)
+
+**Obrigatório pra TODA skill nova**, não importa se framework ou Eloscope-only. RESOLVER.md é o dispatcher canônico — OpenClaw e gbrain runtime leem direto de lá. Sem essa entrada, esses consumers ficam cegos pra skill nova.
+
+Editar `~/elobrain/skills/RESOLVER.md`:
+
+1. Identificar a seção correta:
+   - Operacional (validador, timer, salve, sync) → `## Operational`
+   - Conteúdo (carrossel, PDF, blog) → `## Content production`
+   - Brain (query, enrich, ingest) → `## Brain operations`
+   - Vendas (LP, deck, GTM) → `## Sales` (criar se não existir)
+   - Setup/migração → `## Setup & migration`
+   - Meta (audit, configure, criar skills) → `## Operational`
+
+2. Adicionar linha:
+   ```
+   | "<trigger 1>", "<trigger 2>", "/<name>" | `skills/<name>/SKILL.md` |
+   ```
+
+3. Se a skill cria categoria nova, adicionar seção `## <Nome da categoria>` antes da linha.
+
+---
 
 ### Passo 6 — Integrar com Director (se aplicável)
 
