@@ -165,40 +165,88 @@ Buscar também:
 
 ## Passo 5 — Apresentar aprovação em batch
 
-Mostrar tudo em uma única lista, formatada para revisão rápida:
+Mostrar tudo em **tabelas completas** com TODOS os campos que serão tocados. Sem isso, o usuário aprova no escuro e podem aparecer surpresas (assignee errado, lista errada, falta de prioridade, etc.).
+
+### Para cada ✅ Completar / 🟡 Atualizar (comentário em task existente)
+
+```
+[N] Task: <id> — "<nome>"
+    Lista: <nome_da_lista> (<list_id>)
+    Cliente/Projeto: <cliente>
+    Assignee atual: <nome> (#<user_id>)
+    Status atual: <status>  →  <novo_status> (ou "não muda" se ✅ já done)
+    Vencimento atual: <data> (<flag: no prazo/atrasada/vencida>)
+    Comentário a adicionar:
+    """
+    <texto completo do comentário, com refs/commits/arquivos>
+    """
+    Time entry: <Xmin> (se track_time=true)
+```
+
+### Para cada 🆕 Criar (task nova)
+
+**TODOS os campos obrigatórios + opcionais relevantes:**
+
+```
+[N] [NOVA] "<nome da task>"
+    Lista: <nome_da_lista> (<list_id>)
+    Status inicial: <done | in progress | open>
+    Assignee: <nome> (#<user_id>)
+    Prioridade: <urgent | high | normal | low>
+    Tags: <lista de tags | "—" se não usa>
+    Start date: <YYYY-MM-DD ou "—">
+    Due date: <YYYY-MM-DD ou "—">
+    Parent task: <id pai se for subtask | "— (standalone)">
+    Description:
+    """
+    <description completa em markdown, com refs e detalhes>
+    """
+    Time entry: <Xmin> (se track_time=true)
+```
+
+### Para cada ⏭️ Operacional (sem ação no ClickUp)
+
+```
+- <descrição curta + razão (commit, cleanup, config interna, etc.)>
+```
+
+### Output completo
 
 ```
 📋 Validação de Sessão — DD/MM/YYYY HH:MM
-Usuário: [nome] (ClickUp #[id])
+Usuário: <nome> (ClickUp #<id>)
+track_time: <true | false>
 
-═══ ✅ Completar (3) ═══
-[1] 86e1d9uxx — "Ajustar prompt Grau 10K BDR" → done
-    Cliente: Campos Joia · Vencimento: 14/05 (atrasada)
-[2] 86e1d9uxy — "Reorganizar clientes cerebro" → done
-    Cliente: Eloscope interno · Vencimento: 15/05
-[3] ...
+═══ ✅ Completar (N) ═══
+<tabelas completas, uma por item>
 
-═══ 🟡 Atualizar (1) ═══
-[4] 86e1d9uxz — "Maqlam SDR setup" → 60%
-    Comentário: "Playbook regenerado (HTML+PDF), prompt ajustado (chat_ia_memory).
-                 Pendente: saudação P1 + conflito emojis."
+═══ 🟡 Atualizar parcial (N) ═══
+<tabelas completas>
 
-═══ 🆕 Criar (2) ═══
-[5] [NOVA] "Regenerar playbook PDF Maqlam" 
-    Lista: Maqlam · Status: done · Subtask de: [auto-detect]
-[6] [NOVA] "Análise prompt × playbook Maqlam" 
-    Lista: Maqlam · Status: done · Owner: Victor
+═══ 🆕 Criar nova (N) ═══
+<tabelas completas — todos os campos>
 
-═══ ⏭️ Ignorar (4) ═══
-- Commit "fix typo prompt"
-- Read PROPAGATION.md
-- ...
+═══ ⏭️ Operacional — sem track (N) ═══
+<lista curta>
 
 ────────────────────────
-Aprovar tudo? [s/n] · Editar item: [número] · Remover: [-número]
+Total time entries: <Xmin> (se track_time=true)
+
+Aprovar tudo? [s/n]
+Editar item: [número] [campo] [novo valor]    ex: "[3] prioridade urgent"
+Remover item: [-número]
 ```
 
-Aguardar input do usuário. Se quiser editar, abrir o item específico, ajustar, voltar à lista.
+### Regras do preview
+
+- **NUNCA esconder campos:** sempre mostrar lista, assignee, status, prioridade, datas e description completa antes de criar
+- **NUNCA usar `[auto-detect]` ou similar:** se a skill não sabe um valor, perguntar antes de chegar no preview
+- **Description completa visível:** se a description tem 20 linhas, mostra as 20 linhas (não trunca)
+- **Comentário completo visível:** mesmo padrão — não truncar texto que vai pro ClickUp
+- **Tempo destacado:** se `track_time=true`, mostrar tempo por item + total ao final
+- **Edição inline:** usuário pode ajustar qualquer campo via `[N] campo valor` sem cancelar tudo
+
+Aguardar input do usuário. Loop até `s`.
 
 ---
 
