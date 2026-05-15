@@ -202,6 +202,65 @@ Aguardar input do usuário. Se quiser editar, abrir o item específico, ajustar,
 
 ---
 
+## Passo 5.5 — Estimativa de tempo (se habilitado)
+
+**Verificar config do usuário em `people.md`:** procurar campo `track_time: true/false` na entrada do membro ativo.
+
+- `track_time: true` → executar este passo
+- `track_time: false` ou ausente → PULAR direto pro Passo 6
+
+### 5.5.a — Heurística de sugestão automática
+
+Para cada ação ✅/🟡/🆕 aprovada, sugerir uma estimativa baseada no tipo:
+
+| Tipo de ação | Estimativa sugerida |
+|---|---|
+| Skill nova ou framework (criar do zero) | 45min |
+| Refactor/evolução grande (Passo novo, regras novas) | 30min |
+| Refinamento (FAQ gate, regra anti-placeholder, ajuste de lógica) | 15min |
+| Comentário/comprovante de output derivado (PDF, HTML, análise) | 10min |
+| Reorganização de pasta/arquivos | 10min |
+| Análise/research interno | 20min |
+| Configuração/setup pontual | 15min |
+
+### 5.5.b — Apresentação para aprovação
+
+```
+⏱️  Estimativa de tempo — DD/MM/YYYY
+
+✅ Completar (3):
+[1] 86e1d9uxx — Ajustar prompt Grau 10K BDR
+    Tempo: [15min] ← refinamento
+[2] 86e1d9uxy — Reorganizar clientes cerebro
+    Tempo: [10min] ← reorganização
+
+🆕 Criar (2):
+[5] [NOVA] Skill /validar-sessao criada
+    Tempo: [45min] ← skill nova framework
+
+────────────────────────────
+Total da sessão: 70min
+Aprovar tempos? [s/edit/n]
+Editar item: [número] [Xmin]
+```
+
+### 5.5.c — Edição manual
+
+Se o usuário digitar `[3] 25min`, ajustar a estimativa do item 3 e re-mostrar. Loop até `s`.
+
+### 5.5.d — Idempotência
+
+Antes de registrar, checar se já existe time entry recente para a task na mesma data — evitar duplicar tempo se a skill rodar 2x.
+
+```
+mcp__claude_ai_ClickUp__clickup_get_task_time_entries
+  task_id: <id>
+```
+
+Se há entry com `description` contendo "via /validar-sessao" da mesma data → pular.
+
+---
+
 ## Passo 6 — Executar em paralelo
 
 Após aprovação, executar em batch (paralelo onde possível):
@@ -240,6 +299,21 @@ mcp__claude_ai_ClickUp__clickup_create_task
   description: "Criada via /validar-sessao em <data>. Ref: <commit>"
 ```
 
+**Registrar tempo (se Passo 5.5 foi executado):**
+
+Para cada task tocada com estimativa aprovada, adicionar time entry:
+
+```
+mcp__claude_ai_ClickUp__clickup_add_time_entry
+  task_id: <id>
+  duration: <ms>           # minutos * 60 * 1000
+  description: "Trabalho registrado via /validar-sessao em <data>"
+  assignee: <user_id>
+  start: <timestamp_ms>    # ~hora aproximada da sessão (now - duration)
+```
+
+Executar em paralelo com os updates/comments — não bloquear se time entry falhar (alguns workspaces ClickUp têm time tracking desativado, é OK).
+
 ---
 
 ## Passo 7 — Resultado
@@ -250,16 +324,18 @@ Mostrar resumo curto:
 ✓ Validação concluída — DD/MM/YYYY HH:MM
 
 ✅ 3 tasks marcadas done:
-  86e1d9uxx — Ajustar prompt Grau 10K BDR
-  86e1d9uxy — Reorganizar clientes cerebro
-  86e1d9uxw — ...
+  86e1d9uxx — Ajustar prompt Grau 10K BDR (15min)
+  86e1d9uxy — Reorganizar clientes cerebro (10min)
+  86e1d9uxw — ... (Xmin)
 
 🟡 1 task atualizada:
-  86e1d9uxz — Maqlam SDR setup (60%)
+  86e1d9uxz — Maqlam SDR setup (60%) (20min)
 
 🆕 2 tasks criadas:
-  86e1d9aaa — Regenerar playbook PDF Maqlam (done)
-  86e1d9aab — Análise prompt × playbook Maqlam (done)
+  86e1d9aaa — Regenerar playbook PDF Maqlam (done, 10min)
+  86e1d9aab — Análise prompt × playbook Maqlam (done, 25min)
+
+⏱️ Tempo total registrado: 80min (se track_time habilitado)
 
 ⏭️ 4 ações operacionais ignoradas.
 
