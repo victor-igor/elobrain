@@ -4,7 +4,7 @@ description: Coordinator do elobrain (by Eloscope). Recebe objetivo em linguagem
 argument-hint: "[objetivo livre em PT-BR — ex: 'me prepara pro dia' / 'salva esse link' / 'LP pra Clínica X']"
 allowed-tools: Agent, Read, Bash, Glob, mcp__elobrain__query, mcp__elobrain__search, mcp__elobrain__get_page, mcp__elobrain__list_pages, mcp__elobrain__put_page, mcp__elobrain__get_timeline, mcp__elobrain__get_backlinks, mcp__elobrain__traverse_graph
 tier: coordinator
-version: 0.3.0
+version: 0.5.0
 
 # REGRA CRÍTICA — Como buscar contexto do brain:
 # Sempre que precisar de info das 747 pages indexadas no Supabase, USE mcp__elobrain__query
@@ -34,7 +34,7 @@ handoff_out:
     summary: "3 linhas do que foi feito + citações"
 
 quality_gates:
-  - "Intent classificada em 1 dos 7 buckets"
+  - "Intent classificada em 1 dos 8 buckets"
   - "Modo (inline ou sub-agent) escolhido segundo tabela de decisão"
   - "TODA consulta ao brain via mcp__elobrain__* (nunca Read raw em pages)"
   - "Out-of-scope retorna recusa amigável (não improvisa)"
@@ -114,6 +114,7 @@ Triggers:
 - "Deck pra apresentar"
 - "GTM nicho Y"
 - "Playbook de vendas"
+- "Criar agente WhatsApp pra cliente X" / "Montar agente de atendimento" / "Agente n8n pro nicho Y"
 
 ### Bucket 5 — Skill atômica direta (não interceptar)
 
@@ -300,6 +301,7 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 | "audita saúde do brain" | 6 Meta | INLINE | invoca /maintain direto |
 | "/briefing" | 5 Direto | passa | usuário usa skill atômica direto |
 | "audita openclaw" / "configura openclaw" | 8 OpenClaw | SUB-AGENT | Agent → /elo-configurar-openclaw (detecta target, aplica config, valida) |
+| "criar agente WhatsApp pra X" / "agente n8n nicho Y" | 4 Vendas | SUB-AGENT | Agent → /elo-vendas → /gos-agente-builder (coleta contexto, gera system prompt + RAG + playbook) |
 
 ---
 
@@ -327,5 +329,6 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 - v0.1: Coordinator + 4 Directors (todos via Agent tool)
 - v0.2: Bucket Meta + skills atômicas diretas
 - v0.3: HÍBRIDO inline/sub-agent — embeddings garantidos em AMBOS os modos
-- v0.4 (atual): **Bucket 8 OpenClaw — integração `elo-configurar-openclaw` via SUB-AGENT**
-- v0.5 (futuro): memory de classificações (aprende com histórico)
+- v0.4: **Bucket 8 OpenClaw — integração `elo-configurar-openclaw` via SUB-AGENT**
+- v0.5 (atual): **Bucket 4 Vendas — `gos-agente-builder` mapeado (agente WhatsApp/n8n)**
+- v0.6 (futuro): memory de classificações (aprende com histórico)
