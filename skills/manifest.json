@@ -223,6 +223,11 @@
       "name": "cronometro",
       "path": "cronometro/SKILL.md",
       "description": "Cronômetro de tarefas com integração ClickUp. Inicia timer real quando você começa uma tarefa, para e adiciona comentário quando termina. Inverso do /validar-sessao (que estima tempo no fim do dia). Sub-comandos: start, stop, pause, resume, status, switch. Estado persistente em ~/.claude/state/cronometro.json sobrevive entre sessões. Triggers: 'cronometro', '/cronometro', 'iniciar tarefa', 'parar timer', 'começar tarefa'."
+    },
+    {
+      "name": "criar-skill",
+      "path": "criar-skill/SKILL.md",
+      "description": "Meta-skill orquestradora pra criar skills novas seguindo TODOS os processos certos: classificação framework vs cliente-only, path correto (elobrain ou cerebro), frontmatter padronizado, atualização do manifest.json, integração com /elo (coordinator) e Directors (/elo-ops, /elo-content, /elo-vendas), sync pra ~/.claude/skills/, commit + push no repo certo, criação de task no ClickUp e notificação do time. Substitui a disciplina manual por checklist auditável. Triggers: 'criar skill', '/criar-skill', 'nova skill', 'skill nova', 'skillify'."
     }
   ],
   "dependencies": {

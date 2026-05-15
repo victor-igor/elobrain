@@ -132,7 +132,8 @@ Se usuário já chamou `/briefing`, `/query`, `/salve`, `/rotina` etc por nome:
 |---|---|
 | "Audita brain health" | `/maintain` |
 | "Conserta citações" | `/citation-fixer` |
-| "Cria nova skill" | `/skill-creator` |
+| "Cria nova skill Eloscope" / "preciso criar skill" / "nova skill" | `/criar-skill` (orquestra elobrain/cerebro + /elo + Director + ClickUp) |
+| "Cria nova skill gbrain genérica" | `/skill-creator` (padrão GBrain conformance) |
 | "Setup workspace" | `/setup` |
 | "Cron task" | `/cron-scheduler` |
 | "Identidade agente" | `/soul-audit` |
@@ -310,6 +311,7 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 | "vou começar a ajustar prompt Campos" | 2 Ops | INLINE | /cronometro start (busca task ClickUp + inicia timer real) |
 | "parei essa task" / "terminei" | 2 Ops | INLINE | /cronometro stop (para timer + comenta + pergunta status) |
 | "valida sessão" / "reconcilia ClickUp" | 2 Ops | INLINE | /validar-sessao (filter_tasks + classifica + aprova batch + executa) |
+| "criar skill nova" / "skillify" / "nova skill" | 6 Meta | INLINE | /criar-skill (12 passos: pergunta, gera, integra, sync, commit, ClickUp, notifica) |
 
 ---
 
