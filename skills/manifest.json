@@ -218,6 +218,11 @@
       "name": "validar-sessao",
       "path": "validar-sessao/SKILL.md",
       "description": "Valida o trabalho da sessão contra ClickUp — compara projetos, usuário, tarefas, subtarefas e prazos. Marca tasks completas como done, atualiza parciais com comentário, cria as que faltam, identifica e remove duplicatas. Roda antes do /salve para garantir que o ClickUp reflita o que foi feito de verdade. Triggers: 'valida sessão', 'valida clickup', '/validar-sessao', '/valida'."
+    },
+    {
+      "name": "cronometro",
+      "path": "cronometro/SKILL.md",
+      "description": "Cronômetro de tarefas com integração ClickUp. Inicia timer real quando você começa uma tarefa, para e adiciona comentário quando termina. Inverso do /validar-sessao (que estima tempo no fim do dia). Sub-comandos: start, stop, pause, resume, status, switch. Estado persistente em ~/.claude/state/cronometro.json sobrevive entre sessões. Triggers: 'cronometro', '/cronometro', 'iniciar tarefa', 'parar timer', 'começar tarefa'."
     }
   ],
   "dependencies": {

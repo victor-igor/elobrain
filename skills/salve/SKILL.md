@@ -152,6 +152,34 @@ Se não houver mudanças ou usuário recusar → pular silenciosamente.
 
 ---
 
+## Passo 4.55 — Verificar timer ativo do /cronometro
+
+Antes de fechar a sessão, checar se há timer rodando que pode ter sido esquecido.
+
+```bash
+state_file=~/.claude/state/cronometro.json
+if [[ -f "$state_file" ]]; then
+  active=$(jq -r '.active_task' "$state_file" 2>/dev/null)
+  if [[ "$active" != "null" && -n "$active" ]]; then
+    task_name=$(jq -r '.active_task.name' "$state_file")
+    task_id=$(jq -r '.active_task.id' "$state_file")
+    started=$(jq -r '.active_task.started_at' "$state_file")
+    paused=$(jq -r '.active_task.paused' "$state_file")
+    echo "⚠️ TIMER ATIVO detectado"
+    echo "   Task: $task_id — $task_name"
+    echo "   Iniciado: $started"
+    echo "   Estado: $([[ "$paused" == "true" ]] && echo "pausado" || echo "rodando")"
+    echo ""
+    echo "Quer parar o timer antes de salvar a sessão? [s/n]"
+  fi
+fi
+```
+
+Se o usuário responder `s` → invocar `/cronometro stop` antes de prosseguir.
+Se `n` → seguir, mas registrar warning no resumo do Passo 6.
+
+---
+
 ## Passo 4.6 — Sync skills + Audit drift
 
 Garante que `~/.claude/skills/` (cache do Claude Code) reflete `~/elobrain/skills/` (source canônica do framework) + `$SECOND_BRAIN_PATH/skills/` (Eloscope-only). OpenClaw não precisa de sync — lê de elobrain direto.
