@@ -138,6 +138,7 @@ Se usuário já chamou `/briefing`, `/query`, `/salve`, `/rotina` etc por nome:
 | "Cron task" | `/cron-scheduler` |
 | "Identidade agente" | `/soul-audit` |
 | "Fan-out paralelo" | `/minion-orchestrator` |
+| "Faz commit e push" / "sobe pro git" / "commita e pusha" (no elosystem-v2) | `/elo-commit-push` (commit+push guiado em monorepo com submodules) |
 
 ### Bucket 7 — Out-of-scope
 
@@ -312,6 +313,7 @@ Formatar curto (3-5 linhas). Mostrar artefatos + citações principais + path do
 | "parei essa task" / "terminei" | 2 Ops | INLINE | /cronometro stop (para timer + comenta + pergunta status) |
 | "valida sessão" / "reconcilia ClickUp" | 2 Ops | INLINE | /validar-sessao (filter_tasks + classifica + aprova batch + executa) |
 | "criar skill nova" / "skillify" / "nova skill" | 6 Meta | INLINE | /criar-skill (12 passos: pergunta, gera, integra, sync, commit, ClickUp, notifica) |
+| "faz commit e push" / "sobe isso pro git" (elosystem-v2) | 6 Meta | INLINE | /elo-commit-push (submódulos primeiro, pausa por repo, bump no pai, para no push) |
 
 ---
 
