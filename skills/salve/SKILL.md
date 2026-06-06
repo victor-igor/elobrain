@@ -253,8 +253,11 @@ for skill in $manifest_skills; do
 done
 
 # Skills no RESOLVER.md mas faltando no manifest
+# Skills Eloscope-only moram no cerebro e NÃO devem estar no manifest do elobrain — pular (linha do RESOLVER contém "Eloscope-only").
+eloscope_only=$(grep -iE 'Eloscope-only' ~/elobrain/skills/RESOLVER.md | grep -oE 'skills/[a-z-]+/SKILL\.md' | sed 's|skills/||; s|/SKILL.md||' | sort -u)
 resolver_skills=$(grep -oE 'skills/[a-z-]+/SKILL\.md' ~/elobrain/skills/RESOLVER.md | sed 's|skills/||; s|/SKILL.md||' | sort -u)
 for skill in $resolver_skills; do
+  echo "$eloscope_only" | grep -qx "$skill" && continue  # Eloscope-only: correto estar fora do manifest
   if ! echo "$manifest_skills" | grep -qx "$skill"; then
     echo "🟠 DRIFT: '$skill' está em RESOLVER.md mas NÃO em manifest.json — gbrain runtime fica cego"
   fi
