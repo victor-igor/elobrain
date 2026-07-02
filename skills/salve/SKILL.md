@@ -11,7 +11,157 @@ description: >
 
 Flush completo de fim de sessão. Captura o contexto da conversa e persiste no segundo cérebro.
 
-**Pré-requisito:** `$SECOND_BRAIN_PATH` configurado e repositório Git acessível.
+**Pré-requisito:** `$SECOND_BRAIN_PATH` configurado e repositório Git acessível. Cofre (`Eloscope-Cofre`) clonado como irmão do Cerebro.
+
+---
+
+## Passo 0 — Blindagem de dados sensíveis (NOVO)
+
+**Executar ANTES de tudo.** Detecta dados confidenciais no Cerebro e oferece mover pro Cofre automaticamente. Bloqueia /salve se houver sensível não-blindado.
+
+### 0.1 — Verificar pré-requisitos
+
+```bash
+cd "$SECOND_BRAIN_PATH"
+
+# Cofre deve estar clonado como irmão
+cofre_path="$(dirname "$SECOND_BRAIN_PATH")/Eloscope-Cofre"
+if [[ ! -d "$cofre_path/.git" ]]; then
+  echo "⚠️  Cofre não encontrado em: $cofre_path"
+  echo "   Clone o Cofre como irmão do Cerebro:"
+  echo "   git clone git@github-eloscope:eloscopecoo-rgb/Eloscope-Cofre.git ../Eloscope-Cofre"
+  exit 1
+fi
+
+echo "🔍 Escaneando dados sensíveis..."
+```
+
+### 0.2 — Detectar arquivos com dados confidenciais
+
+```bash
+# Arquivos modified, staged, untracked nesta sessão
+modified=$(git diff --name-only 2>/dev/null)
+staged=$(git diff --cached --name-only 2>/dev/null)
+untracked=$(git ls-files --others --exclude-standard 2>/dev/null)
+
+all_changed="$modified
+$staged
+$untracked"
+
+sensitive_files=()
+reason_map=()
+
+# Lista de clientes (atualizar conforme crescer)
+CLIENTES="voltrucks|bravo|hugo"
+
+while IFS= read -r file; do
+  [[ -z "$file" || ! -f "$file" ]] && continue
+  
+  reason=""
+  
+  # Regra 1: pasta de cliente/oportunidade/reunião
+  if [[ "$file" =~ areas/vendas/(clientes|oportunidades)/ ]] || \
+     [[ "$file" =~ areas/reunioes/clientes/ ]]; then
+    reason="📁 pasta confidencial (cliente/oportunidade)"
+  # Regra 2: dados financeiros/operacionais
+  elif [[ "$file" =~ areas/operacoes/(custos|auditoria) ]] || \
+       [[ "$file" =~ financeiro/ ]] || \
+       [[ "$file" =~ seguranca/hostinger ]]; then
+    reason="📁 pasta confidencial (financeiro)"
+  fi
+  
+  # Se já tem reason por pasta, pula conteúdo
+  if [[ -n "$reason" ]]; then
+    sensitive_files+=("$file")
+    reason_map+=("$reason")
+    continue
+  fi
+  
+  # Regra 3: procurar padrões no conteúdo (CPF, CNPJ, nomes clientes)
+  if grep -qiE "CPF|CNPJ|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}|[0-9]{2}\.[0-9]{3}\.[0-9]{3}/[0-9]{4}-[0-9]{2}|($CLIENTES)|valor (fechado|total|unitário)" "$file" 2>/dev/null; then
+    sensitive_files+=("$file")
+    reason_map+=("🔐 contém PII/CFO (CPF/CNPJ/valor)")
+  fi
+done <<< "$all_changed"
+```
+
+### 0.3 — Relatar e oferecer blindagem
+
+```bash
+if [[ ${#sensitive_files[@]} -eq 0 ]]; then
+  echo "✅ Nenhum dado confidencial detectado — prosseguindo"
+  echo ""
+else
+  echo ""
+  echo "⚠️  BLINDAGEM: ${#sensitive_files[@]} arquivo(s) com dados sensíveis:"
+  echo ""
+  for i in "${!sensitive_files[@]}"; do
+    printf "  %-40s  %s\n" "${sensitive_files[$i]}" "${reason_map[$i]}"
+  done
+  echo ""
+  echo "Mover para o Cofre automaticamente? (s/n)"
+  
+  # Leitura da decisão do usuário
+  read -r response
+  
+  if [[ "$response" != "s" ]]; then
+    echo ""
+    echo "❌ /salve bloqueado — dados sensíveis detectados"
+    echo ""
+    echo "Resolva manualmente:"
+    echo "  1. git rm <arquivo> (deletar do Cerebro)"
+    echo "  2. Verificar se arquivo já está no Cofre"
+    echo "  3. Rodar /salve novamente quando limpo"
+    echo ""
+    exit 1
+  fi
+fi
+```
+
+### 0.4 — Mover para o Cofre (se confirmado)
+
+```bash
+if [[ "$response" == "s" && ${#sensitive_files[@]} -gt 0 ]]; then
+  echo ""
+  echo "🚀 Movendo para o Cofre..."
+  
+  moved=0
+  failed=0
+  
+  for file in "${sensitive_files[@]}"; do
+    target="$cofre_path/$file"
+    target_dir=$(dirname "$target")
+    
+    # Criar diretórios no Cofre
+    mkdir -p "$target_dir"
+    
+    # Mover arquivo
+    if git -C "$SECOND_BRAIN_PATH" mv "$file" "$target" 2>/dev/null; then
+      echo "  ✓ $file"
+      ((moved++))
+    else
+      # Fallback: cp + rm se git mv falhar
+      cp "$file" "$target" 2>/dev/null && rm "$file" 2>/dev/null && \
+        echo "  ✓ $file (fallback)" && ((moved++)) || \
+        { echo "  ✗ $file (ERRO)"; ((failed++)); }
+    fi
+  done
+  
+  echo ""
+  if [[ $failed -eq 0 ]]; then
+    echo "✅ Blindagem concluída — $moved arquivo(s) movidos pro Cofre"
+    echo ""
+    echo "Próximas etapas:"
+    echo "  • /salve vai commitar no Cerebro (remoções) + Cofre (adições)"
+  else
+    echo "⚠️  Blindagem parcial — $moved movidos, $failed falharam"
+    echo "   Revise os erros antes de continuar"
+    exit 1
+  fi
+fi
+
+echo ""
+```
 
 ---
 
