@@ -257,7 +257,7 @@
     {
       "name": "elo-configurar-openclaw",
       "path": "elo-configurar-openclaw/SKILL.md",
-      "description": "Configurar e auditar uma instância OpenClaw (local ou remota via SSH, bare metal ou Docker Compose) através do Claude Code. Inclui modo audit (\"analisa e aplica melhorias automaticamente\"). Cobre setup inicial, providers/modelos, roteamento multi-modelo, heartbeat, proatividade (HEARTBEAT.md, mandato, crons), compaction, plugins, skills customizadas, canais (Telegram/WhatsApp), mídia/áudio, arquitetura de memória, segurança (UFW, fail2ban, secrets, Cloudflare Tunnel) e diagnóstico. Triggers: \"co"
+      "description": "Configurar e auditar uma instância OpenClaw (local ou remota via SSH, bare metal ou Docker Compose) através do Claude Code. Inclui modo audit (\"analisa e aplica melhorias automaticamente\"). Cobre setup inicial, providers/modelos, roteamento multi-modelo, heartbeat, proatividade (HEARTBEAT.md, mandato, crons), compaction, plugins, skills customizadas, canais (Telegram/WhatsApp), mídia/áudio, arquitetura de memória, segurança (UFW, fail2ban, secrets, Cloudflare Tunnel) e diagnóstico."
     },
     {
       "name": "elo-setup",
@@ -267,7 +267,7 @@
     {
       "name": "post-instagram",
       "path": "post-instagram/SKILL.md",
-      "description": "|"
+      "description": "Produz conteúdo completo para Instagram — carrossel ou post estático — para a própria empresa ou para clientes. Identifica o destino, carrega o padrão de design correto (brandbook da empresa ou do cliente via brain), cria ou valida a copy, e entrega o conteúdo estruturado pronto para diagramação. Company-agnostic."
     },
     {
       "name": "salve",
@@ -277,7 +277,12 @@
     {
       "name": "install",
       "path": "install/SKILL.md",
-      "description": "Skill install (description pending)"
+      "description": "DEPRECATED — substituída pela skill `setup`. Provisionamento do GBrain agora vive em `setup` (auto-provision Supabase, fallback manual, injeção do AGENTS.md, primeiro import + health check)."
+    },
+    {
+      "name": "cerebro",
+      "path": "cerebro/SKILL.md",
+      "description": "Liga o segundo cérebro — carrega o contexto operacional (pendências ativas, deadlines, decisões recentes, projetos, equipe) para operar com memória persistente. Modo Setup quando não configurado; Modo Briefing (enxuto, pull-on-demand) quando já configurado."
     }
   ],
   "dependencies": {

@@ -90,7 +90,7 @@ The `/elo` Coordinator is the **single PT-BR entry point** for the Eloscope oper
 | "valida sessão", "valida clickup", "reconcilia clickup tasks", "/validar-sessao", "validar sessão de trabalho" | `skills/validar-sessao/SKILL.md` |
 | "cronometro", "/cronometro", "iniciar tarefa", "começar tarefa", "parar timer", "vou começar X", "status timer", "switch task" | `skills/cronometro/SKILL.md` |
 | "criar skill Eloscope", "nova skill elobrain", "/criar-skill", "preciso criar uma skill", "skillify Eloscope" | `skills/criar-skill/SKILL.md` |
-| "commit e push", "faz commit e push", "/elo-commit-push", "commitar e pushar", "subir as mudanças", "sobe pro git" (monorepo elosystem-v2 com submodules) | `skills/elo-commit-push/SKILL.md` (Eloscope-only — mora no cerebro) |
+| "commit e push", "faz commit e push", "/elo-commit-push", "commitar e pushar", "subir as mudanças", "sobe pro git" (monorepo elosystem-v2 com submodules) | — (Eloscope-only — mora em `$SECOND_BRAIN_PATH/skills/elo-commit-push/`) |
 
 ## Setup & migration
 
