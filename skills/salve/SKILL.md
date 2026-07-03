@@ -19,10 +19,14 @@ Flush completo de fim de sessão. Captura o contexto da conversa e persiste no s
 
 **Executar ANTES de tudo.** Detecta dados confidenciais no Cerebro e oferece mover pro Cofre automaticamente. Bloqueia /salve se houver sensível não-blindado.
 
-### 0.1 — Verificar pré-requisitos
+### 0.1 — Verificar pré-requisitos + estrutura Cofre
 
 ```bash
 cd "$SECOND_BRAIN_PATH"
+
+# Auto-repara symlink _cofre, detecta acesso e sinaliza stubs desatualizados.
+# (self-heal: cria _cofre -> ../Eloscope-Cofre se faltar)
+[ -f scripts/cofre-check.sh ] && bash scripts/cofre-check.sh
 
 # Cofre deve estar clonado como irmão
 cofre_path="$(dirname "$SECOND_BRAIN_PATH")/Eloscope-Cofre"
