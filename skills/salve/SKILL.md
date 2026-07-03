@@ -486,6 +486,35 @@ git push origin main
 
 ---
 
+## Passo 5.5 — Publicar o Cofre (repo interno `_cofre/`)
+
+**O Cofre é um repo git INDEPENDENTE** clonado dentro do Cerebro em `_cofre/` (gitignorado). O push do Passo 5 (Cerebro) **não** toca nele. Se houve mudança em dado confidencial (você editou algo em `_cofre/...` OU a Fase 0 moveu arquivo sensível pra lá), tem que commitar e pushar o Cofre **no próprio remote** (`eloscopecoo-rgb/Eloscope-Cofre`).
+
+```bash
+cofre="$SECOND_BRAIN_PATH/_cofre"
+if [[ -d "$cofre/.git" ]]; then
+  if [[ -n "$(git -C "$cofre" status --porcelain)" ]]; then
+    echo "🔐 Mudanças no Cofre detectadas — publicando no repo privado..."
+    git -C "$cofre" add -A
+    git -C "$cofre" commit -m "cofre: [resumo do que mudou em 1 linha]"
+    git -C "$cofre" pull --rebase origin main
+    git -C "$cofre" push origin main
+    echo "🔐 Cofre publicado."
+  else
+    echo "🔐 Cofre sem mudanças — nada a publicar."
+  fi
+else
+  echo "🔐 Cofre não presente nesta máquina (sem acesso) — pulando."
+fi
+```
+
+**Regras:**
+- Commit do Cofre é **separado** do Cerebro — nunca misture as mensagens. Cerebro = contexto operacional; Cofre = dado confidencial.
+- Se o Cofre não existe (`_cofre/` ausente, máquina sem acesso) → pula silenciosamente. O Cerebro segue normal.
+- Conflito no push do Cofre → `git -C "$cofre" pull --rebase origin main` e tenta de novo. Nunca `--force`.
+
+---
+
 ## Passo 6 — Confirmar
 
 ```
@@ -499,7 +528,8 @@ Atualizado:
 Não precisou atualizar:
   [categorias sem mudanças]
 
-Pushed para origin/main.
+Cerebro → pushed para origin/main.
+Cofre   → [pushed para origin/main | sem mudanças | sem acesso]
 ```
 
 ---
