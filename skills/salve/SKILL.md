@@ -11,7 +11,7 @@ description: >
 
 Flush completo de fim de sessão. Captura o contexto da conversa e persiste no segundo cérebro.
 
-**Pré-requisito:** `$SECOND_BRAIN_PATH` configurado e repositório Git acessível. Cofre (`Eloscope-Cofre`) clonado como irmão do Cerebro.
+**Pré-requisito:** `$SECOND_BRAIN_PATH` configurado e repositório Git acessível. Cofre (`Eloscope-Cofre`) clonado DENTRO do Cerebro em `_cofre/` (gitignorado).
 
 ---
 
@@ -24,16 +24,16 @@ Flush completo de fim de sessão. Captura o contexto da conversa e persiste no s
 ```bash
 cd "$SECOND_BRAIN_PATH"
 
-# Auto-repara symlink _cofre, detecta acesso e sinaliza stubs desatualizados.
-# (self-heal: cria _cofre -> ../Eloscope-Cofre se faltar)
+# Migra layout antigo, detecta acesso e sinaliza stubs desatualizados.
+# (cofre-check move um Cofre irmão pra _cofre/ e remove symlink antigo)
 [ -f scripts/cofre-check.sh ] && bash scripts/cofre-check.sh
 
-# Cofre deve estar clonado como irmão
-cofre_path="$(dirname "$SECOND_BRAIN_PATH")/Eloscope-Cofre"
+# Cofre é clonado DENTRO do Cerebro em _cofre/ (gitignored)
+cofre_path="$SECOND_BRAIN_PATH/_cofre"
 if [[ ! -d "$cofre_path/.git" ]]; then
   echo "⚠️  Cofre não encontrado em: $cofre_path"
-  echo "   Clone o Cofre como irmão do Cerebro:"
-  echo "   git clone git@github-eloscope:eloscopecoo-rgb/Eloscope-Cofre.git ../Eloscope-Cofre"
+  echo "   Clone o Cofre DENTRO do Cerebro:"
+  echo "   git clone git@github-eloscope:eloscopecoo-rgb/Eloscope-Cofre.git _cofre"
   exit 1
 fi
 
