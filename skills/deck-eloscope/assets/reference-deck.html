@@ -1,0 +1,1135 @@
+<style>
+@import url("fonts.css");
+
+/* --- fonts embedded as data URIs (Artifact CSP blocks external font hosts) --- */
+
+
+
+
+
+
+
+
+
+
+:root {
+  --canvas: #07080c;
+  --surface: #0a0b11;
+  --surface-ink: #111118;
+  --ink: #F2F2F0;
+  --muted: rgba(255,255,255,0.42);
+  --faint: rgba(255,255,255,0.58);
+  --cyan: #00D4FF;
+  --cyan-tip: #00ffcc;
+  --magenta: #D946EF;
+  --hair: rgba(255,255,255,0.06);
+  --hair-2: rgba(255,255,255,0.10);
+  --hair-3: rgba(255,255,255,0.16);
+  --glass: rgba(255,255,255,0.03);
+  --glass-2: rgba(255,255,255,0.05);
+  --cyan-border: rgba(0,212,255,0.14);
+  --cyan-border-hover: rgba(0,212,255,0.32);
+  --cyan-fill: rgba(0,212,255,0.05);
+
+  --display: 'Syne', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --shadow-glass: rgba(255,255,255,0.06) 0px 0.5px 0px 0.5px, rgba(0,0,0,0.4) 0px 14px 40px;
+  --shadow-glass-hover: rgba(0,212,255,0.10) 0px 0px 24px, rgba(255,255,255,0.06) 0px 0.5px 0px 0.5px, rgba(0,0,0,0.4) 0px 14px 40px;
+  --shadow-cta: 0 0 44px rgba(0,212,255,0.30);
+  --led: linear-gradient(to right, transparent, #00D4FF 30%, #00ffcc 50%, #00D4FF 70%, transparent);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--faint);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+h1, h2, h3 { margin: 0; color: var(--ink); }
+p { margin: 0; }
+strong { color: var(--ink); font-weight: 600; }
+::selection { background: rgba(0,212,255,0.22); color: var(--ink); }
+
+/* ---------- Section label (brand chrome: hairline + mono) ---------- */
+.kicker {
+  display: flex; align-items: center; gap: 14px;
+  font: 500 11px/1.4 var(--mono);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 30px;
+}
+.kicker::before { content: ''; width: 34px; height: 1px; background: var(--hair-3); flex-shrink: 0; }
+.kicker .n { color: var(--cyan); }
+
+/* ---------- Display type ---------- */
+.slide h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2rem, 3.6vw, 3.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  text-wrap: balance;
+  max-width: 20ch;
+}
+.hl { color: var(--cyan); }
+.lead {
+  font-size: clamp(1rem, 1.25vw, 1.14rem);
+  line-height: 1.72;
+  color: var(--muted);
+  max-width: 54ch;
+  margin-top: 22px;
+}
+.lead strong { color: var(--ink); font-weight: 600; }
+
+/* ---------- Deck shell ---------- */
+.deck { position: relative; height: 100vh; width: 100vw; }
+.slide {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column; justify-content: center;
+  padding: 92px 8.5vw 88px;
+  overflow-y: auto; overflow-x: hidden;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 360ms var(--ease), transform 360ms var(--ease);
+}
+.slide.active { display: flex; opacity: 1; transform: translateY(0); }
+.slide-inner { width: 100%; max-width: 1120px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* Ambient cyan glow, repositioned per slide — the brand's section-rhythm device */
+.slide::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(760px 460px at var(--glow-x, 88%) var(--glow-y, 8%), rgba(0,212,255,0.10), transparent 60%);
+}
+#s1 { --glow-x: 92%; --glow-y: 12%; }
+#s2 { --glow-x: 10%; --glow-y: 90%; }
+#s3 { --glow-x: 90%; --glow-y: 20%; }
+#s4 { --glow-x: 8%;  --glow-y: 15%; }
+#s5 { --glow-x: 95%; --glow-y: 85%; }
+#s7 { --glow-x: 96%; --glow-y: 14%; }
+#s7b { --glow-x: 96%; --glow-y: 14%; }
+#s7c { --glow-x: 96%; --glow-y: 14%; }
+#s7d { --glow-x: 96%; --glow-y: 14%; }
+#s8 { --glow-x: 50%; --glow-y: -10%; }
+#s9 { --glow-x: 12%; --glow-y: 20%; }
+#s10 { --glow-x: 88%; --glow-y: 85%; }
+#s11 { --glow-x: 15%; --glow-y: 90%; }
+#s12 { --glow-x: 90%; --glow-y: 12%; }
+/* Slide 6 (pivot) and 13 (close) — dual glow, the two emotional peaks */
+#s6::before { background:
+  radial-gradient(1100px 700px at 50% 22%, rgba(0,212,255,0.14), transparent 60%),
+  radial-gradient(820px 560px at 50% 100%, rgba(217,70,239,0.10), transparent 60%); }
+#s13::before { background:
+  radial-gradient(900px 600px at 16% 4%, rgba(0,212,255,0.13), transparent 58%),
+  radial-gradient(900px 600px at 88% 104%, rgba(217,70,239,0.10), transparent 58%); }
+
+/* ---------- Glass card primitive ---------- */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--cyan-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-glass);
+  padding: 26px 28px;
+}
+
+/* ---------- LED divider ---------- */
+.led { height: 1px; background: var(--led); box-shadow: 0 0 16px 3px rgba(0,212,255,0.30); border: 0; }
+
+/* =========================================================
+   SLIDE 0 — Capa
+   ========================================================= */
+#s0 { justify-content: center; }
+#s0::before { background:
+  radial-gradient(1100px 720px at 50% 18%, rgba(0,212,255,0.13), transparent 60%),
+  radial-gradient(860px 580px at 50% 102%, rgba(217,70,239,0.09), transparent 60%); }
+.cover { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.cover-logo { height: 42px; width: auto; margin-bottom: 38px; }
+.cover-led { width: 88px; height: 1px; margin-bottom: 40px; }
+.cover-eyebrow { font: 500 11px/1 var(--mono); letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); margin-bottom: 30px; }
+.cover-title { font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 5.2vw, 4.4rem); line-height: 1.04; letter-spacing: -0.03em; color: var(--ink); max-width: 15ch; text-wrap: balance; }
+.cover-sub { margin-top: 26px; font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.65; color: var(--muted); max-width: 48ch; }
+.cover-foot { margin-top: 48px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+.cover-foot .cy { color: var(--cyan); }
+
+/* =========================================================
+   SLIDE 1 — Abertura
+   ========================================================= */
+#s1 .hero-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 56px; align-items: center; }
+.hero-mark { height: 34px; width: auto; margin-bottom: 30px; display: block; }
+#s1 .figure {
+  border: 1px solid var(--hair-2); border-radius: 14px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.04), rgba(0,212,255,0.03));
+  aspect-ratio: 4/3; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: var(--muted); text-align: center;
+}
+#s1 .figure .mono { font: 500 11px/1.5 var(--mono); letter-spacing: 0.08em; text-transform: lowercase; max-width: 22ch; }
+#s1 .figure.shot { padding: 0; overflow: hidden; border-color: var(--cyan-border); aspect-ratio: auto; height: auto; }
+#s1 .figure.shot img { width: 100%; height: auto; display: block; }
+.statband {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin-top: 52px; border-top: 1px solid var(--hair-2); padding-top: 34px;
+}
+.stat { padding: 0 30px; border-left: 1px solid var(--hair); }
+.stat:first-child { padding-left: 0; border-left: 0; }
+.statn {
+  font-family: var(--display); font-weight: 700; font-size: clamp(2.4rem, 4vw, 3.4rem);
+  line-height: 1; color: var(--ink); letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+}
+.statn span { font-size: 0.5em; color: var(--muted); font-weight: 600; }
+.statl { margin-top: 12px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.statband-src { margin-top: 22px; display: flex; align-items: center; gap: 10px; font: 400 11.5px/1.5 var(--mono); letter-spacing: 0.03em; color: var(--muted); }
+.statband-src::before { content: ''; width: 22px; height: 1px; background: var(--cyan); flex-shrink: 0; box-shadow: 0 0 8px rgba(0,212,255,0.5); }
+
+/* =========================================================
+   SLIDE 2 — Evolução (de → para)
+   ========================================================= */
+.evo { display: grid; grid-template-columns: 1fr auto 1.3fr; gap: 36px; align-items: stretch; margin-top: 44px; }
+.evo-col { display: flex; flex-direction: column; justify-content: center; }
+.evo-col .cap { font: 500 10px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.evo-from { opacity: 0.72; }
+.evo-from .headline { font-family: var(--display); font-weight: 700; font-size: clamp(1.4rem, 2vw, 1.85rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--faint); }
+.evo-from .sub { margin-top: 10px; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
+.evo-arrow { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.evo-arrow .line { width: 1px; flex: 1; background: linear-gradient(to bottom, transparent, var(--cyan), transparent); box-shadow: 0 0 12px rgba(0,212,255,0.4); }
+.evo-arrow .tip { font-size: 20px; color: var(--cyan); margin: 8px 0; }
+.evo-to { padding: 30px 32px; }
+.evo-to .cap { color: var(--cyan); }
+.evo-to .headline { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 2.4vw, 2.15rem); line-height: 1.12; letter-spacing: -0.025em; color: var(--ink); }
+.evo-to .sub { margin-top: 12px; font-size: 14px; line-height: 1.55; color: var(--muted); }
+.evo-proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; border-top: 1px solid var(--hair-2); padding-top: 30px; }
+.evo-proof .p { padding-left: 26px; border-left: 1px solid var(--hair); }
+.evo-proof .p:first-child { padding-left: 0; border-left: 0; }
+.evo-proof .n { font-family: var(--display); font-weight: 700; font-size: clamp(1.7rem, 2.6vw, 2.3rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.evo-proof .n span { color: var(--cyan); }
+.evo-proof .l { margin-top: 12px; font: 500 11px/1.5 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* =========================================================
+   SLIDES 2b/2c — Proposto × Entregue · Funcionalidades
+   ========================================================= */
+.compare { display: grid; grid-template-columns: 1fr auto 1.3fr; gap: 34px; margin-top: 38px; align-items: start; }
+.cmp-col .cap { font: 500 10px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 18px; }
+.cmp-col.was { opacity: 0.72; }
+.cmp-col.was .cap { color: var(--muted); }
+.cmp-col.now { padding: 24px 28px; }
+.cmp-col.now .cap { color: var(--cyan); }
+.cmp-line { align-self: stretch; width: 1px; background: linear-gradient(to bottom, transparent, var(--cyan), transparent); box-shadow: 0 0 12px rgba(0,212,255,0.35); }
+.cmp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.cmp-list li { font-size: 13.5px; line-height: 1.5; }
+.cmp-col.was .cmp-list li { color: var(--muted); }
+.cmp-col.now .cmp-list li { color: var(--faint); }
+.cmp-col.now .cmp-list li strong { color: var(--ink); font-weight: 600; }
+.compare-foot { margin-top: 32px; border-top: 1px solid var(--hair-2); padding-top: 22px; font-size: 15px; line-height: 1.6; color: var(--muted); }
+.compare-foot .big { color: var(--cyan); font-family: var(--display); font-weight: 700; letter-spacing: -0.02em; }
+.compare-foot strong { color: var(--ink); font-weight: 600; }
+
+.feat-list { margin-top: 38px; }
+.feat-row { display: flex; justify-content: space-between; align-items: baseline; gap: 30px; padding: 18px 0; border-top: 1px solid var(--hair); }
+.feat-row:first-child { border-top: 0; }
+.feat-row .name { color: var(--ink); font-size: 16px; font-weight: 500; }
+.feat-row .imp { font: 500 13px/1.4 var(--mono); letter-spacing: 0.06em; color: var(--cyan); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.feat-row .imp .u { color: var(--muted); }
+
+/* =========================================================
+   SLIDE 3 — Situação (2x2 glass)
+   ========================================================= */
+.grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 44px; }
+.sit-card { transition: border-color 250ms var(--ease), box-shadow 250ms var(--ease); }
+.sit-card:hover { border-color: var(--cyan-border-hover); box-shadow: var(--shadow-glass-hover); }
+.sit-card .head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.sit-card .name { color: var(--ink); font-weight: 600; font-size: 15.5px; }
+.sit-card .src { font: 500 10px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); opacity: 0.85; }
+.sit-card .desc { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+
+/* =========================================================
+   SLIDE 4 — Problema (editorial rows)
+   ========================================================= */
+.prob-list { margin-top: 40px; }
+.prob-row { display: grid; grid-template-columns: 30px 1fr; gap: 22px; padding: 22px 0; border-top: 1px solid var(--hair); align-items: start; }
+.prob-row .idx { font: 500 12px/1.6 var(--mono); color: var(--muted); letter-spacing: 0.1em; }
+.prob-row .t { color: var(--ink); font-weight: 600; font-size: 16px; margin-bottom: 5px; }
+.prob-row .d { font-size: 13.5px; line-height: 1.6; color: var(--muted); max-width: 68ch; }
+.prob-row.peak { border-top-color: var(--cyan-border); }
+.prob-row.peak .idx { color: var(--cyan); }
+.prob-row.peak .t { color: var(--ink); }
+.prob-row.peak .tag { display: inline-block; margin-left: 12px; font: 500 10px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); vertical-align: middle; }
+
+/* =========================================================
+   SLIDE 5 — Implicação (contrast rows)
+   ========================================================= */
+.imp-list { margin-top: 40px; }
+.imp-row { display: flex; justify-content: space-between; align-items: baseline; gap: 40px; padding: 20px 0; border-top: 1px solid var(--hair); }
+.imp-row .k { color: var(--ink); font-size: 16px; font-weight: 500; max-width: 52ch; }
+.imp-row .v { font: 500 12px/1.4 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.imp-row.peak { border-top-color: var(--cyan-border); }
+.imp-row.peak .k { font-size: 18px; font-weight: 600; }
+.imp-row.peak .v { color: var(--cyan); }
+/* Fill-in placeholder (must be replaced with real numbers before sending) + payback punchline */
+.ph { color: var(--cyan); border-bottom: 1px dashed var(--cyan-border-hover); padding: 0 3px; font-style: normal; }
+.imp-row .v.ph { color: var(--cyan); }
+.payback { margin-top: 36px; border-top: 1px solid var(--cyan-border); padding-top: 24px; font-size: 15.5px; line-height: 1.7; color: var(--faint); max-width: 74ch; }
+.payback strong { color: var(--ink); font-weight: 600; }
+/* Slide 17 (retorno) is content-dense — compact it so nothing hides behind the footer chrome */
+#s10 h1 { margin-bottom: 2px; }
+#s10 .lead { margin-top: 14px; }
+#s10 .imp-list { margin-top: 20px; }
+#s10 .imp-row { padding: 12px 0; }
+#s10 .imp-row .k { font-size: 15px; max-width: 64ch; }
+#s10 .payback { margin-top: 20px; padding-top: 16px; font-size: 14px; }
+/* Slide 08 (o que muda) — "E se..." anaphora across all the pains, not just one */
+.whatif-lead { font: 500 clamp(1rem, 1.6vw, 1.3rem)/1.4 var(--body); color: var(--muted); margin: 6px 0 30px; }
+.whatif { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 15px; }
+.whatif li { position: relative; padding-left: 30px; font-family: var(--display); font-weight: 600; font-size: clamp(1.35rem, 2.5vw, 2.05rem); line-height: 1.22; letter-spacing: -0.02em; color: var(--ink); }
+.whatif li::before { content: ''; position: absolute; left: 0; top: 0.7em; width: 14px; height: 1px; background: var(--cyan); box-shadow: 0 0 8px rgba(0,212,255,0.55); }
+.whatif-q { margin-top: 36px; padding-top: 30px; border-top: 1px solid var(--cyan-border); font-family: var(--display); font-weight: 700; font-size: clamp(1.9rem, 3.4vw, 2.9rem); line-height: 1.05; letter-spacing: -0.025em; color: var(--ink); }
+
+/* =========================================================
+   SLIDE 6 — Pergunta (manifesto)
+   ========================================================= */
+#s6 { justify-content: center; }
+#s6 .slide-inner { text-align: left; display: flex; flex-direction: column; align-items: flex-start; }
+#s6 .kicker { margin-bottom: 34px; opacity: 0.8; }
+#s6 h1 {
+  text-transform: none; font-weight: 700; letter-spacing: -0.025em;
+  font-size: clamp(1.9rem, 3.4vw, 3rem); line-height: 1.24; max-width: 20ch; margin: 0 auto;
+}
+
+/* =========================================================
+   SLIDES 7-10 — Soluções (2-col asymmetric)
+   ========================================================= */
+.sol-tabs { display: flex; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
+.sol-tab {
+  appearance: none; -webkit-appearance: none; background: none; cursor: pointer;
+  font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: lowercase;
+  padding: 8px 15px; border-radius: 999px; border: 1px solid var(--hair-2); color: var(--muted);
+  transition: all 180ms var(--ease);
+}
+.sol-tab:hover { border-color: var(--cyan-border-hover); color: var(--ink); }
+.sol-tab.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-fill); cursor: default; }
+.sol-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 52px; align-items: start; }
+.sol-lede { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.sol-num { font-family: var(--display); font-weight: 800; font-size: 2.4rem; line-height: 1; color: var(--cyan); letter-spacing: -0.03em; }
+.sol-num .slash { color: var(--hair-3); }
+.sol-grid h1 { max-width: 16ch; margin-bottom: 18px; }
+.sol-problem { font-size: 14.5px; line-height: 1.65; color: var(--muted); margin-bottom: 26px; padding-bottom: 24px; border-bottom: 1px solid var(--hair); max-width: 46ch; }
+.sol-problem strong { color: var(--ink); }
+.checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 15px; }
+.checklist li { position: relative; padding-left: 30px; font-size: 15px; line-height: 1.5; color: var(--faint); }
+.checklist li strong { color: var(--ink); }
+.checklist li::before {
+  content: ''; position: absolute; left: 0; top: 2px; width: 17px; height: 17px;
+  border-radius: 5px; border: 1px solid var(--cyan-border-hover); background: var(--cyan-fill);
+}
+.checklist li::after {
+  content: ''; position: absolute; left: 5.5px; top: 5px; width: 5px; height: 9px;
+  border-right: 1.5px solid var(--cyan); border-bottom: 1.5px solid var(--cyan); transform: rotate(45deg);
+}
+.sol-side { display: flex; flex-direction: column; gap: 18px; }
+.impact { background: var(--cyan-fill); border: 1px solid var(--cyan-border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-glass); }
+.impact .lbl { font: 500 10px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
+.impact .txt { color: var(--ink); font-size: 16px; font-weight: 500; line-height: 1.5; }
+.frame {
+  border: 1px solid var(--hair-2); border-radius: 12px; aspect-ratio: 16/10;
+  background: linear-gradient(160deg, rgba(255,255,255,0.035), rgba(0,212,255,0.025));
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  color: var(--muted); text-align: center; padding: 20px;
+}
+.frame .mono { font: 500 10.5px/1.5 var(--mono); letter-spacing: 0.06em; text-transform: lowercase; max-width: 24ch; }
+.frame.shot { padding: 0; overflow: hidden; border-color: var(--cyan-border); aspect-ratio: auto; height: auto; }
+.frame.shot img { width: 100%; height: auto; display: block; }
+.sol-note { font: 500 11px/1.6 var(--mono); letter-spacing: 0.02em; color: var(--muted); }
+.sol-quote { margin: 0 0 26px; font-style: italic; color: var(--faint); font-size: 15px; line-height: 1.55; max-width: 46ch; }
+.sol-quote .mark { color: var(--cyan); font-style: normal; font-weight: 600; margin-right: 3px; }
+.sol-quote .who { display: block; margin-top: 10px; font: 500 10px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-style: normal; }
+
+/* =========================================================
+   SLIDE 11 — Arquitetura
+   ========================================================= */
+#s8 .slide-inner { text-align: center; }
+#s8 h1 { margin: 0 auto; max-width: 20ch; }
+#s8 .lead { margin-left: auto; margin-right: auto; text-align: center; }
+.arch-base {
+  display: inline-flex; align-items: center; gap: 12px; margin: 40px auto 0;
+  padding: 14px 30px; border-radius: 999px; border: 1px solid var(--cyan-border);
+  background: var(--cyan-fill); font-family: var(--display); font-weight: 700; font-size: 1.05rem;
+  color: var(--cyan); letter-spacing: -0.01em; box-shadow: 0 0 30px rgba(0,212,255,0.14);
+}
+.arch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 40px; text-align: left; }
+.arch-node { transition: border-color 250ms var(--ease), box-shadow 250ms var(--ease); }
+.arch-node:hover { border-color: var(--cyan-border-hover); box-shadow: var(--shadow-glass-hover); }
+.arch-node .n { color: var(--ink); font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+.arch-node .d { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+
+/* =========================================================
+   SLIDE 12 — Benefícios (2-col editorial)
+   ========================================================= */
+.ben-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 56px; margin-top: 40px; }
+.ben-row { display: flex; align-items: flex-start; gap: 18px; padding: 17px 0; border-top: 1px solid var(--hair); }
+.ben-row .n { font: 500 12px/1.7 var(--mono); color: var(--cyan); letter-spacing: 0.1em; min-width: 24px; }
+.ben-row .t { color: var(--ink); font-weight: 500; font-size: 16.5px; display: flex; flex-direction: column; gap: 4px; }
+.ben-row .t strong { font-weight: 600; }
+.ben-row .t .bd { font-size: 12.5px; line-height: 1.45; color: var(--muted); font-weight: 400; }
+
+/* =========================================================
+   SLIDE 13 — Retorno (contrast rows)
+   ========================================================= */
+.roi-head { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-bottom: 16px; border-bottom: 1px solid var(--hair-2); }
+.roi-head .h { font: 500 11px/1.4 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; }
+.roi-head .h.cost { color: var(--muted); }
+.roi-head .h.ret { color: var(--cyan); }
+.pb-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 34px; align-items: center; margin-top: 36px; }
+@media (max-width: 920px){ .pb-grid { grid-template-columns: 1fr; gap: 22px; } }
+.pb-lbl { font: 500 10px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.pb-num { font-family: var(--display); font-weight: 700; font-size: clamp(1.7rem, 3vw, 2.5rem); line-height: 1; letter-spacing: -0.03em; color: var(--ink); }
+.pb-num span { font-size: 0.42em; color: var(--muted); font-weight: 600; }
+.pb-num.cy { color: var(--cyan); }
+.pb-sub { margin-top: 12px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+.pb-eq { font: 500 11px/1.4 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan); text-align: center; white-space: nowrap; }
+.roi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 17px 0; border-top: 1px solid var(--hair); }
+.roi-row:first-child { border-top: 0; }
+.roi-row .cost { color: var(--muted); font-size: 14.5px; line-height: 1.5; }
+.roi-row .ret { color: var(--ink); font-size: 14.5px; font-weight: 500; line-height: 1.5; }
+.roi-row .ret::before { content: '→ '; color: var(--cyan); }
+
+/* =========================================================
+   SLIDE 14 — Cronograma
+   ========================================================= */
+.road { margin-top: 44px; }
+.road .led { margin-bottom: 30px; }
+.road-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.road-step .num { font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1; color: var(--cyan); letter-spacing: -0.03em; opacity: 0.55; margin-bottom: 14px; }
+.road-step.first .num { opacity: 1; }
+.road-step .name { color: var(--ink); font-weight: 600; font-size: 15.5px; margin-bottom: 7px; }
+.road-step .desc { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.road-note { margin-top: 40px; font: 500 11.5px/1.6 var(--mono); color: var(--muted); }
+.road-note strong { color: var(--cyan); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
+.road-eta { display: inline-block; margin-bottom: 26px; font: 500 11px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); border: 1px solid var(--cyan-border); border-radius: 999px; padding: 9px 18px; box-shadow: 0 0 20px rgba(0,212,255,0.12); }
+/* Anchor slide: "upside" callout — the gains that don't even enter the measurable floor */
+.up-note { margin-top: 26px; padding: 20px 26px; border-radius: 12px; border: 1px solid var(--cyan-border); background: var(--cyan-fill); font-size: 15px; line-height: 1.62; color: var(--faint); }
+.up-note strong { color: var(--ink); font-weight: 600; }
+/* Investimento slide: two cost buckets (one-time build | recurring run) */
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; align-items: start; }
+.cost-card { padding: 30px 32px; }
+.cost-card.accent { border-color: var(--cyan-border); background: var(--cyan-fill); }
+.cost-tag { font: 500 10px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 18px; }
+.cost-price { font-family: var(--display); font-weight: 800; font-size: clamp(1.8rem, 2.8vw, 2.5rem); line-height: 1; color: var(--ink); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.cost-price small { font-size: 0.42em; color: var(--muted); font-weight: 600; }
+.cost-price .to { color: var(--hair-3); font-weight: 400; margin: 0 2px; }
+.cost-sub { margin-top: 14px; font: 500 11.5px/1.55 var(--mono); letter-spacing: 0.02em; color: var(--muted); }
+.cost-list { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 13px; }
+.cost-list li { font-size: 13px; line-height: 1.5; color: var(--faint); padding-left: 17px; position: relative; }
+.cost-list li::before { content: ''; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); opacity: 0.75; }
+.cost-list li strong { color: var(--ink); font-weight: 600; }
+.cost-sub strong { color: var(--ink); font-weight: 600; }
+.cost-note { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--cyan-border); font: 500 11.5px/1.55 var(--mono); letter-spacing: 0.02em; color: var(--muted); }
+.cost-note strong { color: var(--cyan); }
+.cost-fine { margin-top: 26px; font: 400 12.5px/1.7 var(--mono); color: var(--muted); }
+.cost-fine strong { color: var(--ink); }
+@media (max-width: 900px) { .cost-grid { grid-template-columns: 1fr; } }
+
+/* =========================================================
+   SLIDE 15 — Investimento
+   ========================================================= */
+.invest { margin-top: 40px; padding: 40px 44px; }
+.invest .price { font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--ink); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.invest .price-lbl { margin-top: 16px; font: 500 12px/1.5 var(--mono); letter-spacing: 0.06em; color: var(--muted); }
+.invest .led { margin: 30px 0; }
+.ramp { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.ramp .step { font: 500 13px/1.4 var(--mono); color: var(--faint); }
+.ramp .step.now { color: var(--muted); }
+.ramp .step.final { color: var(--cyan); }
+.ramp .arr { color: var(--hair-3); }
+.invest .fine { margin-top: 30px; font: 400 12.5px/1.7 var(--mono); color: var(--muted); }
+
+/* =========================================================
+   SLIDE 16 — Fechamento
+   ========================================================= */
+#s13 { justify-content: center; }
+#s13 .slide-inner { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.close-mark { height: 26px; width: auto; margin-bottom: 34px; }
+#s13 .kicker { justify-content: center; margin-bottom: 26px; opacity: 0.8; }
+#s13 h1 { margin: 0 auto 18px; max-width: 18ch; }
+#s13 .lead { margin: 0 auto 36px; text-align: center; }
+.cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn-primary {
+  background: var(--cyan); color: var(--canvas); text-decoration: none;
+  font: 700 14px/1 var(--body); letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 17px 38px; border-radius: 999px; box-shadow: var(--shadow-cta);
+  transition: transform 150ms var(--ease), background 200ms var(--ease);
+}
+.btn-primary:hover { background: #1adcff; }
+.btn-primary:active { transform: scale(0.97); }
+.btn-secondary {
+  background: transparent; color: var(--ink); text-decoration: none;
+  font: 700 14px/1 var(--body); letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 17px 38px; border-radius: 999px; border: 1px solid var(--hair-3);
+  transition: border-color 200ms var(--ease), color 200ms var(--ease);
+}
+.btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+.close-note { margin-top: 42px; font: 400 11px/1.6 var(--mono); letter-spacing: 0.04em; color: var(--muted); }
+/* Appendix slide: per-module split (break-glass, negotiation only) */
+.modsplit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 36px; }
+.modsplit-card { padding: 30px 30px; }
+.ms-pct { font-family: var(--display); font-weight: 800; font-size: clamp(2.4rem, 4vw, 3.4rem); line-height: 1; color: var(--cyan); letter-spacing: -0.03em; }
+.ms-name { margin-top: 16px; font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink); }
+.ms-val { margin-top: 8px; font: 500 13px/1 var(--mono); letter-spacing: 0.04em; color: var(--faint); }
+.ms-desc { margin-top: 14px; font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+.modsplit-note { margin-top: 32px; font-size: 14px; line-height: 1.6; color: var(--muted); max-width: 70ch; }
+.modsplit-note strong { color: var(--ink); font-weight: 600; }
+@media (max-width: 900px) { .modsplit-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Brand header ---------- */
+.brand-header {
+  position: fixed; top: 0; left: 0; right: 0; height: 60px; z-index: 25;
+  display: flex; align-items: center; gap: 12px; padding: 0 8.5vw;
+  background: linear-gradient(180deg, rgba(7,8,12,0.95) 55%, transparent);
+  pointer-events: none;
+}
+.brand-header img { height: 15px; width: auto; opacity: 0.92; display: block; }
+.brand-header .sep { width: 1px; height: 11px; background: var(--hair-3); }
+.brand-header .tag { font: 500 10px/1 var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- Deck chrome ---------- */
+.deck-chrome {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; padding: 22px 8.5vw;
+  pointer-events: none;
+}
+.deck-chrome > * { pointer-events: auto; }
+.counter { font: 500 11px/1 var(--mono); letter-spacing: 0.12em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dots { display: flex; gap: 7px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--hair-3); border: none; padding: 0; cursor: pointer; transition: all 180ms var(--ease); }
+.dot.active { background: var(--cyan); transform: scale(1.35); box-shadow: 0 0 10px rgba(0,212,255,0.6); }
+.nav-btns { display: flex; gap: 8px; }
+.nav-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--hair-2);
+  background: rgba(10,11,17,0.7); backdrop-filter: blur(10px); color: var(--ink);
+  cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 17px;
+  transition: all 180ms var(--ease);
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+.nav-btn:disabled { opacity: 0.25; cursor: default; }
+/* ---------- Light-mode slides (visual rhythm) — token override cascades to all children ---------- */
+.slide.light {
+  --ink: #0A0A0A;
+  --muted: rgba(0,0,0,0.55);
+  --faint: rgba(0,0,0,0.68);
+  --cyan: #0099CC;
+  --cyan-tip: #00b3a0;
+  --hair: rgba(0,0,0,0.08);
+  --hair-2: rgba(0,0,0,0.12);
+  --hair-3: rgba(0,0,0,0.20);
+  --glass: rgba(0,0,0,0.02);
+  --surface: #ffffff;
+  --cyan-border: rgba(0,153,204,0.22);
+  --cyan-border-hover: rgba(0,153,204,0.45);
+  --cyan-fill: rgba(0,153,204,0.06);
+  --shadow-glass: rgba(0,0,0,0.05) 0 0.5px 0 0.5px, rgba(0,0,0,0.10) 0 14px 40px;
+  --shadow-glass-hover: rgba(0,153,204,0.10) 0 0 24px, rgba(0,0,0,0.05) 0 0.5px 0 0.5px, rgba(0,0,0,0.10) 0 14px 40px;
+  --led: linear-gradient(to right, transparent, #0099CC 30%, #00b3a0 50%, #0099CC 70%, transparent);
+  background: #F6F8FA;
+}
+.slide.light::before { background: radial-gradient(760px 460px at var(--glow-x,88%) var(--glow-y,8%), rgba(0,153,204,0.06), transparent 60%); }
+.slide.light .btn-primary { color: #fff; }
+/* Light-slide editorial refinements — softer LED + readable "was" column */
+.slide.light .led { box-shadow: 0 0 16px 3px rgba(0,153,204,0.20); }
+.slide.light .cmp-line { box-shadow: 0 0 12px rgba(0,153,204,0.22); }
+.slide.light .cmp-col.was { opacity: 0.9; }
+.slide.light .dot.active { box-shadow: 0 0 10px rgba(0,153,204,0.55); }
+
+/* ---------- Theme-aware chrome: fixed header, nav, dots, progress adapt on light slides ---------- */
+.brand-header, .brand-header img, .brand-header .tag, .brand-header .sep,
+.counter, .dot, .nav-btn, .progress-bar {
+  transition: background 260ms var(--ease), color 260ms var(--ease),
+              border-color 260ms var(--ease), box-shadow 260ms var(--ease),
+              filter 260ms var(--ease), opacity 260ms var(--ease);
+}
+body.on-light .brand-header { background: linear-gradient(180deg, rgba(246,248,250,0.96) 55%, transparent); }
+body.on-light .brand-header img { filter: brightness(0); opacity: 0.80; }
+body.on-light .brand-header .tag { color: rgba(0,0,0,0.48); }
+body.on-light .brand-header .sep { background: rgba(0,0,0,0.20); }
+body.on-light .counter { color: rgba(0,0,0,0.48); }
+body.on-light .dot { background: rgba(0,0,0,0.20); }
+body.on-light .dot.active { background: #0099CC; box-shadow: 0 0 10px rgba(0,153,204,0.55); }
+body.on-light .nav-btn { background: rgba(255,255,255,0.72); border-color: rgba(0,0,0,0.14); color: #0A0A0A; }
+body.on-light .nav-btn:hover:not(:disabled) { border-color: #0099CC; color: #0099CC; }
+body.on-light .progress-bar {
+  background: linear-gradient(to right, transparent, #0099CC 30%, #00b3a0 50%, #0099CC 70%, transparent);
+  box-shadow: 0 0 12px 2px rgba(0,153,204,0.35);
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 30;
+  background: var(--led); transform: scaleX(0); transform-origin: left center;
+  box-shadow: 0 0 12px 2px rgba(0,212,255,0.4);
+  transition: transform 360ms var(--ease);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 920px) {
+  .slide { padding: 84px 6vw 84px; }
+  #s1 .hero-grid, .sol-grid { grid-template-columns: 1fr; gap: 32px; }
+  #s1 .figure { aspect-ratio: 16/9; }
+  .grid-2x2, .arch-grid, .road-grid, .ben-grid, .roi-head, .roi-row, .evo-proof { grid-template-columns: 1fr; }
+  .evo, .compare { grid-template-columns: 1fr; gap: 20px; }
+  .cmp-line { display: none; }
+  .feat-row { flex-direction: column; gap: 6px; align-items: flex-start; }
+  .evo-arrow { flex-direction: row; height: 24px; }
+  .evo-arrow .line { width: auto; height: 1px; background: linear-gradient(to right, transparent, var(--cyan), transparent); }
+  .evo-arrow .tip { transform: rotate(90deg); margin: 0 8px; }
+  .evo-proof .p { padding-left: 0; border-left: 0; }
+  .statband { grid-template-columns: 1fr; gap: 24px; }
+  .stat { padding: 0; border-left: 0; }
+  .roi-row .cost, .roi-head .h.cost { display: none; }
+}
+
+</style>
+
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="brand-header">
+  <img src="brand/logo-wordmark.png" alt="Eloscope">
+</div>
+
+<div class="deck">
+
+  <!-- SLIDE 0 — Capa -->
+  <section class="slide active" id="s0">
+    <div class="slide-inner cover">
+      <img class="cover-logo" src="brand/logo-wordmark.png" alt="Eloscope">
+      <div class="led cover-led"></div>
+      <p class="cover-eyebrow">Proposta de expansão · Julho 2026</p>
+      <h1 class="cover-title">A próxima fase do <span class="hl">ReabilitaCão</span></h1>
+      <p class="cover-sub">Financeiro, estoque e uma equipe que corre atrás da meta: os quatro módulos que fecham o ciclo da operação.</p>
+      <p class="cover-foot">preparado para Franciele <span class="cy">·</span> Reabilitação Veterinária</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 1 — Abertura -->
+  <section class="slide" id="s1">
+    <div class="slide-inner">
+      <div class="hero-grid">
+        <div>
+          <img class="hero-mark" src="brand/hero-mark.png" alt="">
+          <p class="kicker"><span class="n">01</span> / abertura</p>
+          <h1><span class="hl">10 meses</span> depois: o que construímos juntos</h1>
+          <p class="lead">Vocês confiaram num sistema que hoje sustenta a operação inteira da clínica. Antes de falar do próximo passo, vale lembrar onde chegamos.</p>
+        </div>
+        <div class="figure shot"><img src="ASSET_PLACEHOLDER.png" alt="Dashboard do ReabilitaCão em produção"></div>
+      </div>
+      <div class="statband">
+        <div class="stat"><div class="statn">6.045</div><div class="statl">atendimentos reais registrados</div></div>
+        <div class="stat"><div class="statn">3.673</div><div class="statl">tutores cadastrados</div></div>
+        <div class="stat"><div class="statn">84.128</div><div class="statl">interações de atendimento</div></div>
+      </div>
+      <p class="statband-src">medidos no banco de produção da clínica e verificados por auditoria técnica independente · jul/2026</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 — Evolução -->
+  <section class="slide" id="s2">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">02</span> / evolução</p>
+      <h1>Começou como uma IA no WhatsApp. <span class="hl">Virou o sistema inteiro.</span></h1>
+      <p class="lead">Vocês contrataram uma camada de automação. Hoje o ReabilitaCão cresceu para <strong>≈4× o escopo inicial</strong> e sustenta a operação clínica completa. Foi esse salto que fez surgir as necessidades de agora.</p>
+      <div class="evo">
+        <div class="evo-col evo-from">
+          <div class="cap">nov/2025 · contratado</div>
+          <div class="headline">Uma camada de IA</div>
+          <div class="sub">a Maya respondendo o WhatsApp da clínica</div>
+        </div>
+        <div class="evo-arrow"><span class="line"></span><span class="tip">→</span><span class="line"></span></div>
+        <div class="glass evo-to">
+          <div class="cap">hoje · em operação</div>
+          <div class="headline">Sistema veterinário completo</div>
+          <div class="sub">15 módulos: prontuário, agendamento, exames, receituários, dietas, catálogo, campanhas, atribuição de leads e a camada de IA</div>
+        </div>
+      </div>
+      <div class="evo-proof">
+        <div class="p"><div class="n">2.447</div><div class="l">atendimentos respondidos pela IA</div></div>
+        <div class="p"><div class="n">1.855</div><div class="l">lembretes efetivamente enviados</div></div>
+        <div class="p"><div class="n">15</div><div class="l">módulos em operação hoje</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2b — Proposto × Entregue -->
+  <section class="slide light" id="s2b">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">03</span> / o que já entregamos</p>
+      <h1>O que foi proposto, e o que roda hoje</h1>
+      <div class="compare">
+        <div class="cmp-col was">
+          <div class="cap">proposto no início</div>
+          <ul class="cmp-list">
+            <li>8 agentes de IA no WhatsApp</li>
+            <li>Integrações (WhatsApp, Google Agenda, Chatwoot)</li>
+            <li>Dashboards e relatórios</li>
+            <li>CRM visual com pipeline</li>
+            <li>Interface responsiva para a equipe</li>
+          </ul>
+        </div>
+        <div class="cmp-line"></div>
+        <div class="glass cmp-col now">
+          <div class="cap">em operação hoje</div>
+          <ul class="cmp-list">
+            <li><strong>Prontuário clínico completo</strong></li>
+            <li><strong>Agendamento recorrente</strong> + sync Google bidirecional</li>
+            <li><strong>Transcrição de consulta</strong> ao vivo por IA</li>
+            <li><strong>Exames</strong> com análise por IA</li>
+            <li><strong>Receituários</strong> com dose por peso + <strong>dietas</strong></li>
+            <li><strong>Catálogo</strong>, <strong>campanhas</strong> e motor de <strong>automações</strong></li>
+            <li><strong>Atribuição de leads</strong> (CTWA) + analytics + RBAC</li>
+            <li>7 dos 8 agentes de IA em operação</li>
+          </ul>
+        </div>
+      </div>
+      <p class="compare-foot">O sistema de hoje é <span class="big">≈4×</span> o que foi contratado no início. <strong>Ele cresceu junto com a operação de vocês</strong>, e é sobre essa base que a próxima fase se apoia.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 2c — Funcionalidades + impacto -->
+  <section class="slide" id="s2c">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">04</span> / em operação</p>
+      <h1>Cada peça, e o impacto real</h1>
+      <p class="lead">Não é catálogo de recursos: é o que já está trabalhando por vocês, com volume medido no banco de produção.</p>
+      <div class="feat-list">
+        <div class="feat-row"><span class="name">Prontuário clínico</span><span class="imp">247 pets <span class="u">·</span> 3.673 tutores</span></div>
+        <div class="feat-row"><span class="name">Transcrição de consulta por IA</span><span class="imp">145 <span class="u">registros clínicos</span></span></div>
+        <div class="feat-row"><span class="name">Exames analisados por IA</span><span class="imp">99 <span class="u">exames</span></span></div>
+        <div class="feat-row"><span class="name">Receituários com dose por peso</span><span class="imp">129 <span class="u">gerados</span></span></div>
+        <div class="feat-row"><span class="name">Dietas extraídas por IA</span><span class="imp">132 <span class="u">dietas</span></span></div>
+        <div class="feat-row"><span class="name">Campanhas de WhatsApp</span><span class="imp">156 <span class="u">disparos</span></span></div>
+      </div>
+      <p class="statband-src">cada número é uma contagem direta na tabela do módulo, no banco de produção · jul/2026</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 — Situação -->
+  <section class="slide" id="s3">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">05</span> / situação</p>
+      <h1>Como a operação roda hoje</h1>
+      <p class="lead">Vocês não estão sem ferramenta: estão com o controle espalhado em três lugares que não conversam com o ReabilitaCão.</p>
+      <div class="grid-2x2">
+        <div class="glass sit-card"><div class="head"><span class="name">Financeiro</span></div><div class="desc">NuvemVet (simples) + consultoria à parte (R$800/mês) pra conciliação e PowerBI</div></div>
+        <div class="glass sit-card"><div class="head"><span class="name">Estoque</span><span class="src">nuvemvet</span></div><div class="desc">Controlado fora do sistema que a equipe usa todo dia</div></div>
+        <div class="glass sit-card"><div class="head"><span class="name">Comissão</span><span class="src">nuvemvet</span></div><div class="desc">Campo de meta existe, mas o cálculo continua manual</div></div>
+        <div class="glass sit-card"><div class="head"><span class="name">Indicadores</span></div><div class="desc">Dashboards de agenda no ReabilitaCão, sem visão financeira</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — Problema -->
+  <section class="slide" id="s4">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">06</span> / problema</p>
+      <h1>O preço de manter tudo espalhado</h1>
+      <div class="prob-list">
+        <div class="prob-row"><div class="idx">01</div><div><div class="t">Duas assinaturas pro mesmo controle</div><div class="d">NuvemVet faz o que o ReabilitaCão podia fazer nativamente, integrado ao resto da operação</div></div></div>
+        <div class="prob-row"><div class="idx">02</div><div><div class="t">Estoque fora do fluxo</div><div class="d">NuvemVet já alerta vencimento, mas isolado, sem baixa automática ligada à venda real que acontece no ReabilitaCão</div></div></div>
+        <div class="prob-row"><div class="idx">03</div><div><div class="t">Retrabalho mesmo com ferramenta</div><div class="d">O campo de meta existe no NuvemVet, mas o cálculo continua manual</div></div></div>
+        <div class="prob-row"><div class="idx">04</div><div><div class="t">Consultora pagando o preço da fragmentação</div><div class="d">R$800/mês pra analisar, mas parte do tempo vai pra garimpar dado espalhado</div></div></div>
+        <div class="prob-row peak"><div class="idx">05</div><div><div class="t">Cobrar dá constrangimento, e por isso muitas vezes não acontece<span class="tag">o ponto central</span></div><div class="d">Hoje é a secretária quem cobra. O receio de "a pessoa vai achar ruim" adia ou suaviza a cobrança. Não é falta de disciplina, é limite humano natural.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 — Implicação -->
+  <section class="slide" id="s5">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">07</span> / implicação</p>
+      <h1>O que ficar como está, está custando</h1>
+      <div class="imp-list">
+        <div class="imp-row"><span class="k">Duas ferramentas + uma consultoria, sem nada conversando entre si</span><span class="v">controle fragmentado</span></div>
+        <div class="imp-row"><span class="k">Tempo da Fran calculando comissão manualmente</span><span class="v">~3h / mês</span></div>
+        <div class="imp-row"><span class="k">Consultora (R$800/mês) gastando tempo pago pra garimpar dado, não analisar</span><span class="v">retrabalho pago</span></div>
+        <div class="imp-row"><span class="k">Estoque e venda em sistemas separados, baixa manual e risco de divergência</span><span class="v">retrabalho + risco</span></div>
+        <div class="imp-row peak"><span class="k">Cobrança que depende de coragem humana: se ninguém insiste, o dinheiro não entra</span><span class="v">a maior implicação</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 — Pergunta -->
+  <section class="slide" id="s6">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">08</span> / o que muda</p>
+      <p class="whatif-lead">E se, sem depender de você:</p>
+      <ul class="whatif">
+        <li>a <span class="hl">cobrança</span> acontecesse sozinha, sem constranger o cliente?</li>
+        <li>a <span class="hl">comissão</span> se calculasse sozinha, sem tomar 3h do seu mês?</li>
+        <li>a <span class="hl">equipe</span> corresse atrás da meta sem ninguém pedir?</li>
+        <li>o <span class="hl">estoque</span> desse baixa sozinho e avisasse o tutor de repor?</li>
+        <li>o <span class="hl">caixa e o ticket médio</span> estivessem na sua tela agora?</li>
+      </ul>
+      <p class="whatif-q">O que mudaria na sua operação?</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 — Financeiro -->
+  <section class="slide" id="s7">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">09</span> / a solução · 01 de 04</p>
+      <div class="sol-tabs">
+        <button class="sol-tab active" onclick="show(9)">financeiro</button>
+        <button class="sol-tab" onclick="show(10)">estoque</button>
+        <button class="sol-tab" onclick="show(11)">metas &amp; comissões</button>
+        <button class="sol-tab" onclick="show(12)">indicadores</button>
+      </div>
+      <div class="sol-grid">
+        <div>
+          <div class="sol-lede"><span class="sol-num">01<span class="slash">/04</span></span></div>
+          <h1>Financeiro completo</h1>
+          <p class="sol-problem">Resolve a <strong>inadimplência invisível</strong> e a <strong>falta de visão financeira</strong>: hoje ela depende de um encontro mensal com a consultora pra saber como a clínica está.</p>
+          <p class="sol-quote"><span class="mark">“</span>Ticket médio, eu não sei nada disso: coisas que eu preciso saber e não tenho claras pra mim. Ela me apresenta uma vez por mês, manda um print... mas eu gosto de ter um acompanhamento real.<span class="who">Fran · reunião de alinhamento, 24/07</span></p>
+          <ul class="checklist">
+            <li><strong>Fluxo de caixa, faturamento e ponto de equilíbrio em tempo real</strong>, sem esperar o fechamento do mês</li>
+            <li>Contas a pagar e a receber, forma de pagamento (PIX / débito / crédito / dinheiro)</li>
+            <li>Inadimplência e histórico financeiro por cliente</li>
+            <li>Acesso da consultora ao sistema: ela puxa o dado direto, sem montar print à mão</li>
+            <li><strong>Cobrança automática pela Maya, direto no WhatsApp</strong></li>
+          </ul>
+        </div>
+        <div class="sol-side">
+          <div class="impact">
+            <div class="lbl">impacto</div>
+            <div class="txt">Cobrança sem constrangimento humano. Ninguém da equipe precisa mais pedir dinheiro pra quem atende toda semana.</div>
+          </div>
+          <div class="frame shot"><img src="ASSET_PLACEHOLDER.png" alt="Fluxo de caixa e controle financeiro"></div>
+          <div class="sol-note">reaproveita o mesmo motor de lembretes que já roda em produção: custo baixo, não é integração nova.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8 — Estoque -->
+  <section class="slide" id="s7b">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">10</span> / a solução · 02 de 04</p>
+      <div class="sol-tabs">
+        <button class="sol-tab" onclick="show(9)">financeiro</button>
+        <button class="sol-tab active" onclick="show(10)">estoque</button>
+        <button class="sol-tab" onclick="show(11)">metas &amp; comissões</button>
+        <button class="sol-tab" onclick="show(12)">indicadores</button>
+      </div>
+      <div class="sol-grid">
+        <div>
+          <div class="sol-lede"><span class="sol-num">02<span class="slash">/04</span></span></div>
+          <h1>Estoque completo</h1>
+          <p class="sol-problem">Resolve: <strong>estoque isolado</strong>. O NuvemVet já alerta vencimento, mas não sabe o que foi vendido no ReabilitaCão: duas fontes de verdade, risco de divergência.</p>
+          <ul class="checklist">
+            <li>Categorias personalizadas de produto (Homeopatia, Suplementos, Alimentação Natural...)</li>
+            <li>Lotes, validade e estoque mínimo</li>
+            <li>Custo e quantidade disponível</li>
+            <li>Baixa automática vinculada à venda real, sem lançar duas vezes</li>
+            <li><strong>Registro de quem comprou o quê e quando</strong>: base pra a Maya lembrar o tutor de recomprar quando o produto está acabando</li>
+          </ul>
+        </div>
+        <div class="sol-side">
+          <div class="impact">
+            <div class="lbl">impacto</div>
+            <div class="txt">Uma fonte de verdade só (cancela o NuvemVet), e o histórico de compra vira recompra automática pela Maya: mais venda de produto, sem esforço.</div>
+          </div>
+          <div class="frame shot"><img src="ASSET_PLACEHOLDER.png" alt="Painel de estoque, categorias e alertas de vencimento"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9 — Metas & Comissões -->
+  <section class="slide" id="s7c">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">11</span> / a solução · 03 de 04</p>
+      <div class="sol-tabs">
+        <button class="sol-tab" onclick="show(9)">financeiro</button>
+        <button class="sol-tab" onclick="show(10)">estoque</button>
+        <button class="sol-tab active" onclick="show(11)">metas &amp; comissões</button>
+        <button class="sol-tab" onclick="show(12)">indicadores</button>
+      </div>
+      <div class="sol-grid">
+        <div>
+          <div class="sol-lede"><span class="sol-num">03<span class="slash">/04</span></span></div>
+          <h1>Metas &amp; comissões</h1>
+          <p class="sol-problem">Resolve duas dores: o <strong>cálculo manual mensal</strong> que consome metade do seu dia, e a <strong>falta de motivação da equipe</strong>: elas não correm atrás da meta porque não conseguem enxergar quanto falta.</p>
+          <p class="sol-quote"><span class="mark">“</span>Eu não vejo muito esforço de bater meta, porque não olham. Se conseguissem visualizar melhor, iam correr atrás de marcar aqueles dois pacientes pra ganhar o dinheirinho a mais.<span class="who">Fran · reunião de alinhamento, 24/07</span></p>
+          <ul class="checklist">
+            <li><strong>Barra de progresso em tempo real</strong>: cada colaborador vê quanto falta pra bater a meta</li>
+            <li>Ranking e destaque do mês, pra criar competição saudável na equipe</li>
+            <li>Cálculo automático por atendimento e por produto, com tiers por volume (3% → 6%)</li>
+            <li>Campanha mensal configurável por produto, sem precisar de código</li>
+          </ul>
+        </div>
+        <div class="sol-side">
+          <div class="impact">
+            <div class="lbl">impacto</div>
+            <div class="txt">A equipe passa a correr atrás da meta sozinha, porque agora vê o progresso. E ~3h/mês voltam pra você.</div>
+          </div>
+          <div class="frame shot"><img src="ASSET_PLACEHOLDER.png" alt="Painel de metas, ranking e gamificação"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10 — Indicadores -->
+  <section class="slide" id="s7d">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">12</span> / a solução · 04 de 04</p>
+      <div class="sol-tabs">
+        <button class="sol-tab" onclick="show(9)">financeiro</button>
+        <button class="sol-tab" onclick="show(10)">estoque</button>
+        <button class="sol-tab" onclick="show(11)">metas &amp; comissões</button>
+        <button class="sol-tab active" onclick="show(12)">indicadores</button>
+      </div>
+      <div class="sol-grid">
+        <div>
+          <div class="sol-lede"><span class="sol-num">04<span class="slash">/04</span></span></div>
+          <h1>Relatórios &amp; indicadores</h1>
+          <p class="sol-problem">A camada que <strong>lê toda a operação pra decidir</strong> — clínico, comercial e financeiro juntos. O Financeiro controla o caixa; aqui é a visão estratégica de onde focar e o que cresce.</p>
+          <ul class="checklist">
+            <li>Ticket médio e receita por categoria / serviço / produto</li>
+            <li>Sessão avulsa vs. pacote: por que o cliente não fecha pacote</li>
+            <li>Sazonalidade e comparativo mensal e anual</li>
+            <li>Quem mais indica cliente novo, pra saber quais veterinários visitar</li>
+          </ul>
+        </div>
+        <div class="sol-side">
+          <div class="impact">
+            <div class="lbl">impacto</div>
+            <div class="txt">Decisão comercial com dado, não achismo, inclusive pra saber quais veterinários visitar.</div>
+          </div>
+          <div class="frame shot"><img src="ASSET_PLACEHOLDER.png" alt="Painel de relatórios e indicadores da operação"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 11 — Arquitetura -->
+  <section class="slide light" id="s8">
+    <div class="slide-inner">
+      <p class="kicker" style="justify-content:center"><span class="n">13</span> / arquitetura</p>
+      <h1>Tudo em cima do que já roda</h1>
+      <p class="lead">Nenhum módulo novo é um sistema à parte. Cada um consome dado que o ReabilitaCão já registra hoje.</p>
+      <div style="text-align:center"><span class="arch-base">ReabilitaCão</span></div>
+      <div class="arch-grid">
+        <div class="glass arch-node"><div class="n">Financeiro</div><div class="d">usa cadastro de pacote e consulta já existente</div></div>
+        <div class="glass arch-node"><div class="n">Estoque</div><div class="d">usa o mesmo motor de alerta da agenda</div></div>
+        <div class="glass arch-node"><div class="n">Comissão</div><div class="d">usa dado de quem atendeu, já registrado</div></div>
+        <div class="glass arch-node"><div class="n">Indicadores</div><div class="d">usa o dashboard e o financeiro já no ar</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 12 — Benefícios -->
+  <section class="slide" id="s9">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">14</span> / benefícios</p>
+      <h1>O que isso muda na prática</h1>
+      <div class="ben-grid">
+        <div>
+          <div class="ben-row"><span class="n">01</span><span class="t"><strong>~3h/mês de volta</strong><span class="bd">a comissão que você faz na mão sai da sua agenda</span></span></div>
+          <div class="ben-row"><span class="n">02</span><span class="t"><strong>Uma fonte de verdade só</strong><span class="bd">estoque e venda no mesmo sistema — NuvemVet fora, fim da divergência</span></span></div>
+          <div class="ben-row"><span class="n">03</span><span class="t"><strong>Caixa e ticket em tempo real</strong><span class="bd">decisão na hora, sem esperar o print do fim do mês</span></span></div>
+        </div>
+        <div>
+          <div class="ben-row"><span class="n">04</span><span class="t"><strong>Equipe atrás da meta, sozinha</strong><span class="bd">meta visível move o time a fechar mais pacote e produto</span></span></div>
+          <div class="ben-row"><span class="n">05</span><span class="t"><strong>Receita recorrente de produto</strong><span class="bd">a recompra automática pela Maya vira venda que hoje não acontece</span></span></div>
+          <div class="ben-row"><span class="n">06</span><span class="t"><strong>Cobrança sem constrangimento</strong><span class="bd">a Maya cobra no WhatsApp — ninguém da equipe precisa</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 14 — Cronograma -->
+  <section class="slide" id="s11">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">15</span> / cronograma</p>
+      <h1>Como isso entra, um passo de cada vez</h1>
+      <p class="lead"><strong>Tudo em produção em no máximo 1 mês.</strong> Os quatro módulos entram em sequência — e cada etapa só é cobrada quando já está no ar, nunca antes de gerar valor.</p>
+      <div class="road">
+        <div class="road-eta">≈ 1 mês &middot; os 4 módulos no ar</div>
+        <div class="led"></div>
+        <div class="road-grid">
+          <div class="road-step first"><div class="num">01</div><div class="name">Financeiro</div><div class="desc">Prioridade: ajuda o caixa mais rápido</div></div>
+          <div class="road-step"><div class="num">02</div><div class="name">Estoque</div><div class="desc">Controle e alertas automáticos</div></div>
+          <div class="road-step"><div class="num">03</div><div class="name">Metas &amp; Comissões</div><div class="desc">Fim do cálculo manual</div></div>
+          <div class="road-step"><div class="num">04</div><div class="name">Indicadores</div><div class="desc">Decisão comercial orientada a dado</div></div>
+        </div>
+      </div>
+      <div class="road-note"><strong>nota</strong> exportação de histórico do NuvemVet depende do fornecedor: em andamento, fora do nosso controle de prazo.</div>
+    </div>
+  </section>
+
+  <!-- SLIDE — Ancoragem (custo de hoje) -->
+  <section class="slide" id="sanchor">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">16</span> / o valor em jogo</p>
+      <h1>O custo é uma vez. O ganho é todo mês.</h1>
+      <p class="lead">A mensalidade <strong>não muda</strong> — o investimento é único. Daqui pra frente, cada mês só te devolve valor. Começando pelo que dá pra medir:</p>
+      <div class="imp-list">
+        <div class="imp-row"><span class="k"><strong>Economia direta.</strong> NuvemVet cancelado — sai da sua conta todo mês, e a mensalidade nem sobe.</span><span class="v">R$&nbsp;130/mês</span></div>
+        <div class="imp-row"><span class="k"><strong>Seu tempo de volta.</strong> 3h/mês na comissão na mão = <strong>36h/ano</strong> pra focar na clínica, não em planilha.</span><span class="v">R$&nbsp;300/mês*</span></div>
+        <div class="imp-row peak"><span class="k"><strong>Valor de volta, todo mês.</strong> Sem um centavo de aumento na mensalidade — e antes de contar qualquer receita nova.</span><span class="v">R$&nbsp;430/mês</span></div>
+      </div>
+      <p class="up-note">E isto é <strong>lucro por cima</strong>, que nem entra na conta: <strong>recompra recorrente de produto</strong> (a Maya avisa o tutor de repor), <strong>mais pacotes</strong> com a meta visível, e <strong>inadimplência recuperada</strong> pela cobrança automática — <strong>cada um já passa dos R$ 430/mês</strong>.</p>
+      <p class="statband-src">*3h a R$ 100/h — estimativa conservadora pra uma sócia-veterinária; ajuste com o seu número · NuvemVet: economia real e imediata</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 17 — Investimento -->
+  <section class="slide" id="s12">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">17</span> / investimento</p>
+      <h1>O investimento, com as cartas na mesa</h1>
+      <div class="cost-grid">
+        <div class="glass cost-card">
+          <div class="cost-tag">implementação · pagamento único</div>
+          <div class="cost-price">12x <small>de</small> R$&nbsp;806,02</div>
+          <div class="cost-sub">ou R$&nbsp;7.000 à vista · constrói os 4 módulos, no ar em ~1 mês · cada etapa só é cobrada quando entra em produção</div>
+          <ul class="cost-list">
+            <li><strong>Financeiro</strong> — caixa em tempo real, contas a pagar/receber, inadimplência, cobrança automática</li>
+            <li><strong>Estoque</strong> — lotes e validade, baixa automática na venda, recompra pela Maya</li>
+            <li><strong>Metas &amp; Comissões</strong> — progresso ao vivo, ranking, cálculo automático (3%→6%)</li>
+            <li><strong>Indicadores</strong> — ticket médio, avulsa vs. pacote, sazonalidade</li>
+          </ul>
+        </div>
+        <div class="glass cost-card accent">
+          <div class="cost-tag">mensalidade · não muda</div>
+          <div class="cost-price">R$&nbsp;1.987<small>/mês</small></div>
+          <div class="cost-sub"><strong>a mesma de hoje — não sobe um real.</strong> Ela cobre, e segue cobrindo, a operação inteira:</div>
+          <ul class="cost-list">
+            <li><strong>Todo o sistema que já roda hoje</strong> — 15 módulos em produção</li>
+            <li><strong>10h/mês de suporte e manutenção</strong></li>
+            <li><strong>Integrações e infra</strong> — dualhook (US$&nbsp;25) + uazapi, 3 números (R$&nbsp;57/mês)</li>
+            <li><strong>Tokens de IA</strong> — Maya, transcrição de consulta, análise de exames</li>
+          </ul>
+          <div class="cost-note">Passou das 10h no mês? Hora extra a <strong>R$&nbsp;160</strong> — tabela cheia é R$&nbsp;240. A vantagem de ter mensalidade.</div>
+        </div>
+      </div>
+      <div class="cost-fine"><strong>A mensalidade não muda</strong> — o único investimento novo é a implementação (R$ 7.000, uma vez). E com o NuvemVet cancelado (−R$ 130/mês), o seu custo mensal até <strong>cai</strong>.</div>
+    </div>
+  </section>
+
+
+  <!-- SLIDE 13 — Retorno -->
+  <section class="slide" id="s10">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">18</span> / retorno</p>
+      <h1>Quando os R$ 7.000 voltam</h1>
+      <p class="lead">Não tem custo mensal novo — a mensalidade não muda. O investimento único se paga com o que volta todo mês. Veja o <strong>quão pouco</strong> precisa acontecer:</p>
+      <div class="imp-list">
+        <div class="imp-row peak"><span class="k"><strong>Seu tempo, garantido.</strong> As ~3h/mês da comissão manual voltam pro seu dia — R$ 300/mês em tempo, sem depender de vender nada.</span><span class="v">3h/mês de volta</span></div>
+        <div class="imp-row"><span class="k"><strong>Recompra automática.</strong> A Maya lembra o tutor de repor ração, suplemento e homeopatia quando acaba. <strong>Basta uma recompra por semana</strong> que hoje não acontece.</span><span class="v">venda nova</span></div>
+        <div class="imp-row"><span class="k"><strong>Equipe correndo atrás da meta.</strong> Meta visível move o time a fechar mais. <strong>Um pacote a mais no mês</strong>, que hoje fica na mesa.</span><span class="v">receita na mesa</span></div>
+        <div class="imp-row"><span class="k"><strong>Cobrança que acontece sozinha.</strong> A Maya cobra no WhatsApp sem ninguém constranger. <strong>Um cliente que ia atrasar</strong> pagando em dia.</span><span class="v">caixa que entra</span></div>
+      </div>
+      <div class="payback">Só o mensurável — <strong>NuvemVet (R$ 130) + seu tempo (R$ 300) = R$ 430/mês</strong> — devolve os R$ 7.000 em <strong>~16 meses</strong>. Com uma venda nova por semana, em menos de 10. E como a mensalidade nunca subiu, tudo depois disso é <strong>lucro puro</strong>.</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 16 — Fechamento -->
+  <section class="slide" id="s13">
+    <div class="slide-inner">
+      <img class="close-mark" src="brand/logo-wordmark.png" alt="Eloscope">
+      <p class="kicker"><span class="n">19</span> / próximos passos</p>
+      <h1>O que precisa acontecer essa semana</h1>
+      <p class="lead">Um sim pra começarmos pela Etapa 1, o Financeiro. As próximas três entram na conversa depois que essa já estiver provando valor.</p>
+      <div class="cta-row">
+        <a href="mailto:contato@eloscope.com.br?subject=Aprovar%20Etapa%201%20%E2%80%94%20Financeiro%20(ReabilitaC%C3%A3o)&amp;body=Oi%2C%20quero%20aprovar%20a%20Etapa%201%20%E2%80%94%20Financeiro%20da%20proposta." class="btn-primary">Aprovar Etapa 1</a>
+        <a href="mailto:contato@eloscope.com.br?subject=D%C3%BAvida%20sobre%20a%20proposta%20(ReabilitaC%C3%A3o)" class="btn-secondary">Tirar dúvidas</a>
+      </div>
+      <p class="close-note">contato@eloscope.com.br · reabilitacão × eloscope · proposta gerada em 27/07/2026</p>
+    </div>
+  </section>
+
+  <!-- SLIDE — Anexo · divisão por módulo (só se necessário) -->
+  <section class="slide" id="ssplit">
+    <div class="slide-inner">
+      <p class="kicker"><span class="n">◆</span> anexo · flexibilidade</p>
+      <h1>Comece por onde a operação mais pede</h1>
+      <p class="lead">A proposta completa são os 4 módulos por <strong>R$ 7.000</strong>, no ar em ~1 mês. Como cada um roda de forma independente, dá pra entrar por etapas — e a implementação se divide assim:</p>
+      <div class="modsplit-grid">
+        <div class="glass modsplit-card">
+          <div class="ms-pct">50%</div>
+          <div class="ms-name">Financeiro</div>
+          <div class="ms-val">R$ 3.500</div>
+          <div class="ms-desc">a porta de entrada natural — ataca o caixa primeiro</div>
+        </div>
+        <div class="glass modsplit-card">
+          <div class="ms-pct">25%</div>
+          <div class="ms-name">Estoque</div>
+          <div class="ms-val">R$ 1.750</div>
+          <div class="ms-desc">baixa automática na venda + recompra pela Maya</div>
+        </div>
+        <div class="glass modsplit-card">
+          <div class="ms-pct">25%</div>
+          <div class="ms-name">Metas &amp; Comissões</div>
+          <div class="ms-val">R$ 1.750</div>
+          <div class="ms-desc">fim do cálculo manual + meta visível</div>
+        </div>
+      </div>
+      <p class="modsplit-note"><strong>Indicadores</strong> não tem custo à parte — os relatórios já vêm inclusos em cada módulo. E a <strong>mensalidade não muda</strong>, seja qual for o ritmo.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="deck-chrome">
+  <span class="counter" id="counter">01 / 19</span>
+  <div class="dots" id="dots"></div>
+  <div class="nav-btns">
+    <button class="nav-btn" id="prevBtn" aria-label="Slide anterior">‹</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Próximo slide">›</button>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const counter = document.getElementById('counter');
+  const dotsWrap = document.getElementById('dots');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let idx = 0;
+
+  slides.forEach((_, n) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (n === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Ir para slide ' + (n + 1));
+    d.addEventListener('click', () => show(n));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function show(n) {
+    idx = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+    progressBar.style.transform = 'scaleX(' + ((idx + 1) / total) + ')';
+    document.body.classList.toggle('on-light', slides[idx].classList.contains('light'));
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+    slides[idx].scrollTop = 0;
+  }
+
+  prevBtn.addEventListener('click', () => show(idx - 1));
+  nextBtn.addEventListener('click', () => show(idx + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(idx + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
+    if (e.key >= '1' && e.key <= '9') { const n = parseInt(e.key, 10) - 1; if (n < total) show(n); }
+  });
+  show(0);
+</script>
+
+

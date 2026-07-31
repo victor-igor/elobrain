@@ -283,6 +283,11 @@
       "name": "cerebro",
       "path": "cerebro/SKILL.md",
       "description": "Liga o segundo cérebro — carrega o contexto operacional (pendências ativas, deadlines, decisões recentes, projetos, equipe) para operar com memória persistente. Modo Setup quando não configurado; Modo Briefing (enxuto, pull-on-demand) quando já configurado."
+    },
+    {
+      "name": "deck-eloscope",
+      "path": "deck-eloscope/SKILL.md",
+      "description": "Use when creating, editing, or restyling any slide deck / apresentação / proposta visual for Eloscope — sales decks, upsell/expansion proposals, QBR delivery reports, institutional pitches. Produces a single self-contained HTML deck in the Eloscope visual language (Deep Space canvas, Quantum Cyan accent, Syne/Inter/JetBrains Mono, keyboard-navigated slides)."
     }
   ],
   "dependencies": {
