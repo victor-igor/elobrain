@@ -106,6 +106,21 @@ claude mcp add elobrain --scope user \
 # Ver docs/DAEMON.md
 ```
 
+### Codex — skills globais
+
+Para disponibilizar as skills do elobrain em **todos** os projetos locais do
+Codex, rode uma vez a partir do clone:
+
+```bash
+bun run install:codex-skills
+```
+
+O instalador copia as skills para `${CODEX_HOME:-~/.codex}/skills`, sem remover
+skills já existentes, e normaliza o frontmatter para o formato do Codex.
+Reinicie o Codex depois da instalação. No Codex, use `$salve` ou linguagem
+natural (`salve a sessão`); `/salve` é a notação de comando do Claude Code e
+não cria um comando customizado no Codex.
+
 ---
 
 ## Uso

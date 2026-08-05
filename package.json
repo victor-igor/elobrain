@@ -34,6 +34,7 @@
     "build:schema": "bash scripts/build-schema.sh",
     "build:llms": "bun run scripts/build-llms.ts",
     "build:pglite-snapshot": "bun run scripts/build-pglite-snapshot.ts",
+    "install:codex-skills": "bash scripts/install-codex-skills.sh",
     "test": "bash scripts/run-unit-parallel.sh",
     "test:full": "bun run verify && bash scripts/run-unit-parallel.sh && bun run test:slow && ([ -n \"$DATABASE_URL\" ] && bash scripts/run-e2e.sh || echo '[test:full] skipped E2E (no DATABASE_URL); run docker-compose -f docker-compose.ci.yml up + bun run test:e2e to include' 1>&2)",
     "verify": "bun run check:privacy && bun run check:test-names && bun run check:jsonb && bun run check:source-id-projection && bun run check:progress && bun run check:test-isolation && bun run check:wasm && bun run check:admin-build && bun run check:admin-scope-drift && bun run check:cli-exec && bun run check:system-of-record && bun run typecheck",
